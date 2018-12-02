@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class DrivingApiApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(DrivingApiApplication.class, args);
     }
     @RequestMapping(value = "/test",method = RequestMethod.GET)
