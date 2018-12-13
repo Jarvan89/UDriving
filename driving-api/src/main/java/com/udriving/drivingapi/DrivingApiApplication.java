@@ -1,7 +1,9 @@
 package com.udriving.drivingapi;
 
+//import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -12,9 +14,11 @@ public class DrivingApiApplication {
 
         SpringApplication.run(DrivingApiApplication.class, args);
     }
-    @RequestMapping(value = "/test",method = RequestMethod.GET)
-    public String test(){
-        return "test success";
-    }
+//    @Bean
+//    public ResourceConfig resourceConfig() {
+//        ResourceConfig config = new ResourceConfig();
+//        config.register(DrivingApiApplication.class);
+//        return config;
+//    }
 
 }
