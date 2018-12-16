@@ -1,5 +1,4 @@
 package com.udriving.drivingapi.security;
-import static java.util.Collections.emptyList;
 
 import com.udriving.drivingapi.entity.UserInfo;
 import org.springframework.security.core.userdetails.User;
@@ -7,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import static java.util.Collections.emptyList;
 /**
  * Created by IntelliJ IDEA
  * Coder : haiyang
