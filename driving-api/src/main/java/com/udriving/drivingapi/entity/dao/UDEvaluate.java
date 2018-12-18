@@ -1,4 +1,4 @@
-package com.udriving.drivingapi.entity;
+package com.udriving.drivingapi.entity.dao;
 
 import lombok.Data;
 

@@ -27,6 +27,7 @@ public class WeChatLoginFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        System.out.println("---------4--------");
         String code = servletRequest.getParameter("code");
 //        appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
 

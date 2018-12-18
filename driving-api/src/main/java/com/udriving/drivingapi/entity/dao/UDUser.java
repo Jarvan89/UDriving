@@ -1,6 +1,8 @@
-package com.udriving.drivingapi.entity;
+package com.udriving.drivingapi.entity.dao;
 
+import lombok.Cleanup;
 import lombok.Data;
+import org.hibernate.annotations.ColumnTransformer;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +17,8 @@ public class UDUser {
     @Column
     @GeneratedValue
     int id;
+    @Column
+    String userId;
     @Column
     String openId;
     @Column
@@ -31,4 +35,11 @@ public class UDUser {
     String distinction;
     @Column
     int status;
+
+    @Column
+    @ColumnTransformer(
+            read = "decrypt(password)",
+            write = "encrypt(nvl(?, 'null'))"
+    )
+    private String password;
 }

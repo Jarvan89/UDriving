@@ -3,6 +3,7 @@ package com.udriving.drivingapi.util;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -18,21 +19,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JacksonUtil {
     private static ObjectMapper mapper = new ObjectMapper();
 
-    public static String bean2Json(Object obj) throws IOException {
+    public static String toJSONString(Object obj) {
         StringWriter sw = new StringWriter();
-        JsonGenerator gen = new JsonFactory().createJsonGenerator(sw);
-        mapper.writeValue(gen, obj);
-        gen.close();
+        JsonGenerator gen = null;
+        try {
+            gen = new JsonFactory().createJsonGenerator(sw);
+            mapper.writeValue(gen, obj);
+            gen.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return sw.toString();
     }
-    public static ObjectMapper getMapper(){
 
-
+    public static ObjectMapper getMapper() {
         return mapper;
     }
 
     public static <T> T json2Bean(String jsonStr, Class<T> objClass)
-            throws JsonParseException, JsonMappingException, IOException {
+            throws IOException {
         return mapper.readValue(jsonStr, objClass);
+    }
+
+
+    public static Object toJSON(String[] roles) {
+        return null;
     }
 }
