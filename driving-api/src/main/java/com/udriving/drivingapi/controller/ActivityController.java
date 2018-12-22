@@ -23,7 +23,7 @@ public class ActivityController {
     /**
      * 创建一个新的活动
      *
-     * @return 活动创建操作状态，true：成功
+     * @return 活动创建操作状态
      */
     @RequestMapping(value = "/createActivity", method = RequestMethod.POST)
     public Response createActivity(String body) {
@@ -55,6 +55,19 @@ public class ActivityController {
         udActiviti.setWeChatFlockQrCode(createActivityRequestParameter.getWeChatFlockQrCode());
         udActiviti.setStatus(UDActiviti.create);
         activityRepository.save(udActiviti);
+        return response;
+    }
+
+    /**
+     * 查询所有活动
+     *
+     * @return 活动列表
+     */
+    @RequestMapping(value = "/queryAllActivity", method = RequestMethod.GET)
+    public Response queryAllActivity() {
+        //接口返回
+        Response response = new Response();
+        response.setData(activityRepository.findAll());
         return response;
     }
 
