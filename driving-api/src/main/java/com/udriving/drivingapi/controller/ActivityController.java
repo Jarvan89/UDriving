@@ -17,6 +17,8 @@ import sun.misc.BASE64Decoder;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import static com.udriving.drivingapi.entity.activity.ActivitiStatusConstant.*;
+
 /**
  * 活动相关接口
  */
@@ -83,6 +85,45 @@ public class ActivityController {
         //接口返回
         Response response = new Response();
         response.setData(activityRepository.findAll());
+        return response;
+    }
+
+    /**
+     * 查询接受报名的所有活动
+     *
+     * @return 活动列表
+     */
+    @RequestMapping(value = "/queryAllCanApplyActivity", method = RequestMethod.GET)
+    public Response queryAllCanApplyActivity() {
+        //接口返回
+        Response response = new Response();
+        response.setData(activityRepository.findByStatus(release));
+        return response;
+    }
+
+    /**
+     * 查询已经完成的所有活动
+     *
+     * @return 活动列表
+     */
+    @RequestMapping(value = "/queryAllDoneActivity", method = RequestMethod.GET)
+    public Response queryAllDoneActivity() {
+        //接口返回
+        Response response = new Response();
+        response.setData(activityRepository.findByStatus(finish));
+        return response;
+    }
+
+    /**
+     * 查询被删除的所有活动
+     *
+     * @return 活动列表
+     */
+    @RequestMapping(value = "/queryAllDeleteActivity", method = RequestMethod.GET)
+    public Response queryAllDeleteActivity() {
+        //接口返回
+        Response response = new Response();
+        response.setData(activityRepository.findByStatus(delete));
         return response;
     }
 
