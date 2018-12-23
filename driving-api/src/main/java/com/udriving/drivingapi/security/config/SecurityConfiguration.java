@@ -1,5 +1,19 @@
 package com.udriving.drivingapi.security.config;
 
+import com.udriving.drivingapi.security.jwt.JwtAuthenticationEntryPoint;
+import com.udriving.drivingapi.security.jwt.JwtAuthenticationTokenFilter;
+import com.udriving.drivingapi.security.NormalLogin.MyFilterSecurityInterceptor;
+import com.udriving.drivingapi.security.NormalLogin.MyUsernamePasswordAuthenticationFilter;
+import com.udriving.drivingapi.security.NormalLogin.MyAccessDeniedHandler;
+import com.udriving.drivingapi.security.NormalLogin.MyAuthenticationFailureHandler;
+import com.udriving.drivingapi.security.NormalLogin.MyAuthenticationSuccessHandler;
+import com.udriving.drivingapi.security.NormalLogin.MyLogoutSuccessHandler;
+import com.udriving.drivingapi.security.NormalLogin.MyUserDetailService;
+import com.udriving.drivingapi.security.util.SkipPathRequestMatcher;
+import com.udriving.drivingapi.security.weichatlogin.WeiChatAuSuccessHandler;
+import com.udriving.drivingapi.security.weichatlogin.WeiChatAuthenticationFilter;
+import com.udriving.drivingapi.security.weichatlogin.WeiChatAuthenticationProvider;
+import com.udriving.drivingapi.security.weichatlogin.WeiChatFailHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +30,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -48,6 +61,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${com.example.oauth.security.antMatchers}")
     private String antMatchers;
 
+
+
+
     /**
      * 置user-detail服务
      * <p>
@@ -76,7 +92,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         //指定密码加密所使用的加密器为 bCryptPasswordEncoder()
         //需要将密码加密后写入数据库
         // myUserDetailService 类中获取了用户的用户名、密码以及是否启用的信息，查询用户所授予的权限，用来进行鉴权，查询用户作为群组成员所授予的权限
-        auth.userDetailsService(myUserDetailService).passwordEncoder(bCryptPasswordEncoder());
+//        auth.authenticationProvider(getPrivider());
+//        auth.userDetailsService(myUserDetailService).passwordEncoder(bCryptPasswordEncoder());
+
         //不删除凭据，以便记住用户
         auth.eraseCredentials(false);
 
@@ -91,6 +109,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         //解决静态资源被拦截的问题
+
         web.ignoring().antMatchers("/favicon.ico");
         web.ignoring().antMatchers("/error");
         super.configure(web);
@@ -191,11 +210,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //cookie的有效期（秒为单位
                 .tokenValiditySeconds(3600);
         // 加入自定义UsernamePasswordAuthenticationFilter替代原有Filter
-        http.addFilterAt(myUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        //在 beforeFilter 之前添加 自定义 filter
-        http.addFilterBefore(myFilterSecurityInterceptor, FilterSecurityInterceptor.class);
-        // 添加JWT filter 验证其他请求的Token是否合法
-        http.addFilterBefore(authenticationTokenFilterBean(), FilterSecurityInterceptor.class);
+//        http.addFilterAt(myUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(weiChatAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+//        //在 beforeFilter 之前添加 自定义 filter
+//        http.addFilterBefore(myFilterSecurityInterceptor, FilterSecurityInterceptor.class);
+//        // 添加JWT filter 验证其他请求的Token是否合法
+//        http.addFilterBefore(authenticationTokenFilterBean(), FilterSecurityInterceptor.class);
         // 禁用缓存
         http.headers().cacheControl();
 
@@ -290,5 +310,30 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public UsernamePasswordAuthenticationFilter myUsernamePasswordAuthenticationFilter() throws Exception {
         return new MyUsernamePasswordAuthenticationFilter(authenticationManagerBean(), myAuthenticationSuccessHandler(), myAuthenticationFailureHandler());
+    }
+
+    /**
+     * 验证登录验证码
+     *
+     * @return
+     * @throws Exception
+     */
+    @Bean
+    public WeiChatAuthenticationFilter weiChatAuthenticationFilter() throws Exception {
+        return new WeiChatAuthenticationFilter(authenticationManagerBean(), weiChatAuSuccessHandler(), weiChatFailHandler());
+    }
+
+    @Bean
+    public WeiChatAuSuccessHandler weiChatAuSuccessHandler() {
+        return new WeiChatAuSuccessHandler();
+    }
+    @Bean
+    public WeiChatFailHandler weiChatFailHandler() {
+        return new WeiChatFailHandler();
+    }
+
+    @Bean
+    public WeiChatAuthenticationProvider getPrivider(){
+       return new WeiChatAuthenticationProvider();
     }
 }
