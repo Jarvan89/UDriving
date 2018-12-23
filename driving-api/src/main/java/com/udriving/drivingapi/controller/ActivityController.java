@@ -132,7 +132,7 @@ public class ActivityController {
      *
      * @return 活动小群二维码信息数据结构
      */
-    @RequestMapping(value = "/flockQrCode", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadFlockQrCode", method = RequestMethod.POST)
     public Response uploadFlockQrCode(String body) {
         //接口返回
         Response response = new Response();
@@ -177,23 +177,6 @@ public class ActivityController {
         // TODO: 2018/12/22 后续需要重新梳理图片路径的拼接问题
         uploadFlockQrCodeResponse.setFileUrl(systemDomain + flockQrCodeStoragePath + qrCodeFileName);
         response.setData(uploadFlockQrCodeResponse);
-        return response;
-    }
-
-    /**
-     * 获取活动小群群二维码链接
-     *
-     * @return 活动小群群二维码链接
-     */
-    @RequestMapping(value = "/getFlockQrCodeUrl", method = RequestMethod.GET)
-    public Response getFlockQrCodeUrl(String acitivityId) {
-        //接口返回
-        Response response = new Response();
-        UDActiviti udActiviti = activityRepository.getOne(Integer.valueOf(acitivityId));
-        // TODO: 2018/12/22 后续完成域名和路径的拼接
-        response.setData(udActiviti.getWeChatFlockQrCode());
-        // TODO: 2018/12/22 开发调试语句后期去掉
-        response.setData("wwww.baidu.com");
         return response;
     }
 
