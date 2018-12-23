@@ -16,7 +16,9 @@ import sun.misc.BASE64Decoder;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 
+import static com.udriving.drivingapi.controller.response.ResponseConstant.*;
 import static com.udriving.drivingapi.entity.activity.ActivitiStatusConstant.*;
 
 /**
@@ -54,7 +56,7 @@ public class ActivityController {
             e.printStackTrace();
         }
         if (createActivityRequestParameter == null) {
-            response.setCode(Response.ERROR);
+            response.setCode(ERROR);
         }
 
         UDActiviti udActiviti = new UDActiviti();
@@ -142,7 +144,7 @@ public class ActivityController {
             uploadFlockQrCodeRequestParameter = JacksonUtil.json2Bean(body, UploadFlockQrCodeRequestParameter.class);
         } catch (IOException e) {
             e.printStackTrace();
-            response.setCode(Response.ERROR);
+            response.setCode(ERROR);
             return response;
         }
         //Base64解码器
@@ -178,6 +180,74 @@ public class ActivityController {
         uploadFlockQrCodeResponse.setFileUrl(systemDomain + flockQrCodeStoragePath + qrCodeFileName);
         response.setData(uploadFlockQrCodeResponse);
         return response;
+    }
+
+
+    /**
+     * 删除指定活动
+     *
+     * @return 操作结果
+     */
+    @RequestMapping(value = "/deleteActivityById", method = RequestMethod.POST)
+    public Response deleteActivityById(int id) {
+        //接口返回
+        Response response = new Response();
+        byte operationCode = modifiActivityStatusById(id, delete);
+        if (operationCode != SUCCEED) {
+            response.setCode(operationCode);
+        }
+        return response;
+    }
+
+    /**
+     * 审批指定活动
+     *
+     * @return 操作结果
+     */
+    @RequestMapping(value = "/approvalActivityById", method = RequestMethod.POST)
+    public Response approvalActivityById(int id) {
+        //接口返回
+        Response response = new Response();
+        byte operationCode = modifiActivityStatusById(id, release);
+        if (operationCode != SUCCEED) {
+            response.setCode(operationCode);
+        }
+        return response;
+    }
+
+    /**
+     * 查询指定活动
+     *
+     * @return 活动实体
+     */
+    @RequestMapping(value = "/queryActivityById", method = RequestMethod.GET)
+    public Response queryActivityById(int id) {
+        //接口返回
+        Response response = new Response();
+        Optional<UDActiviti> optional = activityRepository.findById(id);
+        response.setData(optional.get());
+        return response;
+    }
+
+    /**
+     * 修改活动状态
+     *
+     * @param id     活动id
+     * @param status 要修改的状态
+     * @return 操作结果状态码
+     */
+    private byte modifiActivityStatusById(int id, byte status) {
+        Optional<UDActiviti> optional = activityRepository.findById(id);
+        UDActiviti udActiviti = optional.get();
+        if (udActiviti == null) {
+            return ACTIVITY_NOT_FIND;
+        }
+        udActiviti.setStatus(status);
+        udActiviti = activityRepository.save(udActiviti);
+        if (udActiviti == null) {
+            return SAVE_FAIL;
+        }
+        return SUCCEED;
     }
 
 }
