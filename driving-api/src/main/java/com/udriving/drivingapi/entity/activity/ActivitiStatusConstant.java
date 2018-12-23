@@ -7,21 +7,21 @@ public interface ActivitiStatusConstant {
     /**
      * 创建状态
      */
-    byte create=0;
+    byte create = 0;
     /**
      * 已经修改
      */
-    byte already_modification=1;
+    byte already_modification = 1;
     /**
      * 发布
      */
-    byte release=2;
+    byte release = 2;
     /**
      * 完成
      */
-    byte finish=3;
+    byte finish = 3;
     /**
      * 删除
      */
-    byte delete=4;
+    byte delete = 4;
 }
