@@ -3,7 +3,6 @@ package com.udriving.drivingapi.controller.response;
 import com.udriving.drivingapi.entity.activity.Activity;
 import com.udriving.drivingapi.entity.activity.ActivityForListPage;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.List;
  * 查询活动列表接口调用返回实体类
  */
 @Getter
-@Setter
 public class ActivityListResponse {
     /**
      * 活动列表
