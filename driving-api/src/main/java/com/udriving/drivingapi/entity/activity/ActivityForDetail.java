@@ -2,7 +2,6 @@ package com.udriving.drivingapi.entity.activity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.util.List;
 
 import static com.udriving.drivingapi.util.DateUtil.countDays;
@@ -52,22 +51,18 @@ public class ActivityForDetail extends BaseActivity {
     /**
      * 微信群聊二维码
      */
-    @Column
     private String weChatFlockQrCode;
     /**
      * 参加活动的车辆id
      */
-    @Column
     private List<String> carNumber;
     /**
      * 路线图片
      */
-    @Column
     private String pathImage;
     /**
      * 注意事项
      */
-    @Column
     private String notes;
 
     /**
