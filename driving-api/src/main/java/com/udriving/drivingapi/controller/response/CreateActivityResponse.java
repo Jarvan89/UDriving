@@ -1,5 +1,6 @@
 package com.udriving.drivingapi.controller.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@AllArgsConstructor
 public class CreateActivityResponse {
     /**
      * 活动id
