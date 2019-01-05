@@ -3,6 +3,7 @@ package com.udriving.drivingapi.entity.activity;
 
 import com.udriving.drivingapi.util.JacksonUtil;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,11 +19,6 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
      */
     @Column
     private String createUserId;
-    /**
-     * 创建人用户名，该名仅针对本次活动有效
-     */
-    @Column
-    private String createUserName;
     /**
      * 活动介绍
      */
@@ -100,7 +96,7 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
     @Column
     private int status;
     /**
-     * 参加活动的车辆id
+     * 参加活动的车辆号
      */
     @Column
     private String carNumber;
@@ -126,17 +122,22 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
      * @return 活动介绍图片
      */
     public List<String> getIntroducePicture() {
+        if (introducePicture == null) {
+            return null;
+        }
         //图片名列表
         List<String> imageNameList = null;
+        //图片名列表
+        List<String> imageUrlList = new LinkedList<>();
         try {
             imageNameList = JacksonUtil.json2Bean(introducePicture, List.class);
         } catch (IOException e) {
             return null;
         }
         for (String imageName : imageNameList) {
-            imageName = "https://liuhao.space/" + imageName;
+            imageUrlList.add("https://liuhao.space/" + imageName);
         }
-        return imageNameList;
+        return imageUrlList;
     }
 
     /**
@@ -145,6 +146,9 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
      * @param introducePicture 活动介绍图片链接列表
      */
     public void setIntroducePicture(List<String> introducePicture) {
+        if (introducePicture == null) {
+            return;
+        }
         //图片名列表
         List<String> imageNameList = new LinkedList<>();
         //将客户端传上来的图片链接截取为仅保留图片文件名
@@ -169,6 +173,9 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
      * @return 目的地信息实体
      */
     public AddressInfo getDestinationAddressInfo() {
+        if (destinationAddressInfo == null) {
+            return null;
+        }
         try {
             return JacksonUtil.json2Bean(destinationAddressInfo, AddressInfo.class);
         } catch (IOException e) {
@@ -187,7 +194,7 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
     }
 
     /**
-     * 设置目的地信息
+     * 设置目的地信息（数据库框架使用）
      *
      * @param destinationAddressInfo 从数据库中读取的目的地信息
      */
@@ -201,6 +208,9 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
      * @return 出发地信息实体
      */
     public AddressInfo getDepartAddressInfo() {
+        if (departAddressInfo == null) {
+            return null;
+        }
         try {
             return JacksonUtil.json2Bean(departAddressInfo, AddressInfo.class);
         } catch (IOException e) {
@@ -219,12 +229,76 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
     }
 
     /**
-     * 设置出发地信息
+     * 设置出发地信息（数据库框架使用）
      *
      * @param departAddressInfo 从数据库中读取的出发地信息实体
      */
     public void setDepartAddressInfo(String departAddressInfo) {
         this.departAddressInfo = departAddressInfo;
+    }
+
+    /**
+     * 获取活动微信群二维码
+     *
+     * @return 活动微信群二维码图片链接
+     */
+    public String getWeChatFlockQrCode() {
+        return "https://liuhao.space/" + weChatFlockQrCode;
+    }
+
+    /**
+     * 设置活动微信群二维码
+     *
+     * @param weChatFlockQrCode 活动微信群二维码图片链接
+     */
+    public void setWeChatFlockQrCode(String weChatFlockQrCode) {
+        if (StringUtils.isEmpty(weChatFlockQrCode)) {
+            return;
+        }
+        this.weChatFlockQrCode = weChatFlockQrCode.substring(weChatFlockQrCode.lastIndexOf("/") + 1);
+    }
+
+    /**
+     * 获取路线图链接
+     *
+     * @return 路线图链接
+     */
+    public String getPathImage() {
+        return "https://liuhao.space/" + pathImage;
+    }
+
+    /**
+     * 设置路线图链接
+     *
+     * @param pathImage 路线图链接
+     */
+    public void setPathImage(String pathImage) {
+        this.pathImage = pathImage.substring(pathImage.lastIndexOf("/") + 1);
+    }
+
+    /**
+     * 获取参加活动的车辆号列表
+     *
+     * @return 参加活动的车辆号列表
+     */
+    public List<String> getCarNumber() {
+        if (carNumber == null) {
+            return null;
+        }
+        try {
+            return JacksonUtil.json2Bean(carNumber, List.class);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
+     * 设置参加活动的车辆号
+     *
+     * @param carNumber 参加活动的车辆号列表
+     */
+    public void setCarNumber(List<String> carNumber) {
+        this.carNumber = JacksonUtil.toJSONString(carNumber);
     }
 
 }

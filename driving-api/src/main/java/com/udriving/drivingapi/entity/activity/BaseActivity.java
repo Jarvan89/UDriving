@@ -34,19 +34,10 @@ public class BaseActivity {
      */
     @Column
     protected float estimateCost;
+
     /**
-     * 目的地城市
+     * 创建人用户名，该名仅针对本次活动有效
      */
     @Column
-    protected String destinationCity;
-    /**
-     * 目的地省份
-     */
-    @Column
-    protected String destinationProvince;
-    /**
-     * 出发地城市
-     */
-    @Column
-    protected String departCity;
+    private String createUserName;
 }

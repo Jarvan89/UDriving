@@ -2,6 +2,7 @@ package com.udriving.drivingapi.entity.activity;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.util.List;
 
 import static com.udriving.drivingapi.util.DateUtil.countDays;
@@ -25,9 +26,10 @@ public class ActivityForListPage extends BaseActivity {
      */
     private long lookOverNumber;
     /**
-     * 活动宣传图片
+     * 目的地城市
      */
-    private List<String> imageUrl;
+    @Column
+    protected String destinationCity;
     /**
      * 出发时间
      */
@@ -36,6 +38,20 @@ public class ActivityForListPage extends BaseActivity {
      * 返回时间
      */
     private String backTime;
+    /**
+     * 目的地省份
+     */
+    @Column
+    protected String destinationProvince;
+    /**
+     * 出发地城市
+     */
+    @Column
+    protected String departCity;
+    /**
+     * 活动介绍图片
+     */
+    private List<String> introducePicture;
 
     public static final ActivityForListPage convert(Activity activity) {
         if (activity == null) {
@@ -60,11 +76,9 @@ public class ActivityForListPage extends BaseActivity {
         activityForListPage.setCreateUserName(activity.getCreateUserName());
         activityForListPage.setDays(countDays(activity.getBackTimestamp(), activity.getDepartTimestamp()));
         activityForListPage.setLookOverNumber(activity.getLookOverNumber());
-        activityForListPage.setImageUrl(activity.getIntroducePicture());
+        activityForListPage.setIntroducePicture(activity.getIntroducePicture());
         activityForListPage.setDepartTime(formatYYYYMMDDHHMMSS(activity.getDepartTimestamp()));
         activityForListPage.setBackTime(formatYYYYMMDDHHMMSS(activity.getBackTimestamp()));
         return activityForListPage;
     }
-
-
 }
