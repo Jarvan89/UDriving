@@ -69,6 +69,21 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
     @Column
     private long backTimestamp;
     /**
+     * 创建时间
+     */
+    @Column
+    private long createTimestamp;
+    /**
+     * 修改时间
+     */
+    @Column
+    private long modifyTimestamp;
+    /**
+     * 修改人用户id
+     */
+    @Column
+    private String modifyUserId;
+    /**
      * 微信群聊二维码
      */
     @Column
