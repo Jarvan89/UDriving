@@ -14,11 +14,16 @@ import javax.persistence.Id;
 @Entity(name = "activitys")
 public class BaseActivity {
     /**
-     * 活动id
+     * 数据库自增id
      */
     @Id
     @GeneratedValue
     protected Integer id;
+    /**
+     * 活动id
+     */
+    @Column
+    protected Long activityId;
     /**
      * 活动名
      */
