@@ -2,6 +2,7 @@ package com.udriving.drivingapi.controller;
 
 import com.udriving.drivingapi.controller.request.CreateActivityRequestParameter;
 import com.udriving.drivingapi.controller.request.UploadFlockQrCodeRequestParameter;
+import com.udriving.drivingapi.controller.response.ActivityListResponse;
 import com.udriving.drivingapi.controller.response.CreateActivityResponse;
 import com.udriving.drivingapi.controller.response.Response;
 import com.udriving.drivingapi.controller.response.UploadFlockQrCodeResponse;
@@ -64,28 +65,14 @@ public class ActivityController {
         activity.setDepartTimestamp(createActivityRequestParameter.getDepartTimestamp());
         activity.setBackTimestamp(createActivityRequestParameter.getBackTimestamp());
         activity.setStatus(Activity.CREATE);
+        activity.setCreateTimestamp(System.currentTimeMillis());
         activity = activityRepository.save(activity);
         //存储失败
         if (activity == null) {
             response.setCode(SAVE_FAIL);
         } else {
-            CreateActivityResponse createActivityResponse = new CreateActivityResponse();
-            createActivityResponse.setId(activity.getId());
-            response.setData(createActivityResponse);
+            response.setData(new CreateActivityResponse(activity.getId()));
         }
-        return response;
-    }
-
-    /**
-     * 查询所有活动
-     *
-     * @return 活动列表
-     */
-    @RequestMapping(value = "/queryAllActivity", method = RequestMethod.GET)
-    public Response queryAllActivity(@RequestParam("offset") int offset, @RequestParam("count") int count) {
-        //接口返回
-        Response response = new Response();
-        response.setData(activityRepository.findAll());
         return response;
     }
 
@@ -95,38 +82,20 @@ public class ActivityController {
      * @return 活动列表
      */
     @RequestMapping(value = "/queryAllCanApplyActivity", method = RequestMethod.GET)
-    public Response queryAllCanApplyActivity(@RequestParam("offset") int offset, @RequestParam("count") int count) {
+    public Response queryAllCanApplyActivity(@RequestParam("offset") int offset, @RequestParam("dataSize") byte dataSize) {
         //接口返回
         Response response = new Response();
-        response.setData(activityRepository.findByStatus(RELEASE));
-        return response;
+        if (offset == 0) {
+            response.setData(new ActivityListResponse(activityRepository.queryAllCanApplyActivity(CREATE, dataSize)));
+            return response;
+        } else {
+            response.setData(new ActivityListResponse(activityRepository.queryAllCanApplyActivity(offset, CREATE, dataSize)));
+            return response;
+        }
+
     }
 
-    /**
-     * 查询已经完成的所有活动
-     *
-     * @return 活动列表
-     */
-    @RequestMapping(value = "/queryAllDoneActivity", method = RequestMethod.GET)
-    public Response queryAllDoneActivity(@RequestParam("offset") int offset, @RequestParam("count") int count) {
-        //接口返回
-        Response response = new Response();
-        response.setData(activityRepository.findByStatus(FINISH));
-        return response;
-    }
 
-    /**
-     * 查询被删除的所有活动
-     *
-     * @return 活动列表
-     */
-    @RequestMapping(value = "/queryAllDeleteActivity", method = RequestMethod.GET)
-    public Response queryAllDeleteActivity(@RequestParam("offset") int offset, @RequestParam("count") int count) {
-        //接口返回
-        Response response = new Response();
-        response.setData(activityRepository.findByStatus(DELETE));
-        return response;
-    }
 
     /**
      * 上传活动小群群二维码
@@ -214,19 +183,6 @@ public class ActivityController {
         return response;
     }
 
-    /**
-     * 查询指定活动
-     *
-     * @return 活动实体
-     */
-    @RequestMapping(value = "/queryActivityById", method = RequestMethod.GET)
-    public Response queryActivityById(int id) {
-        //接口返回
-        Response response = new Response();
-        Optional<Activity> optional = activityRepository.findById(id);
-        response.setData(optional.get());
-        return response;
-    }
 
     /**
      * 修改活动状态
