@@ -7,7 +7,6 @@ import com.udriving.drivingapi.controller.response.*;
 import com.udriving.drivingapi.entity.activity.Activity;
 import com.udriving.drivingapi.entity.activity.ActivityForDetail;
 import com.udriving.drivingapi.entity.activity.ActivityRepository;
-import com.udriving.drivingapi.util.JacksonUtil;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Decoder;
 
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Optional;
 
 import static com.udriving.drivingapi.controller.response.ResponseConstant.*;
@@ -33,12 +31,12 @@ public class ActivityController {
      * 群二维码存储路径
      */
 //    @Resource
-    private String flockQrCodeStoragePath;
+    private String flockQrCodeStoragePath = "flockQrCode/";
     /**
      * 系统域名
      */
 //    @Resource
-    private String systemDomain;
+    private String systemDomain = "https://liuhao.space/";
 
     /**
      * 创建一个新的活动
@@ -167,18 +165,9 @@ public class ActivityController {
      * @return 活动小群二维码信息数据结构
      */
     @RequestMapping(value = "/uploadFlockQrCode", method = RequestMethod.POST)
-    public Response uploadFlockQrCode(String body) {
+    public Response uploadFlockQrCode(@RequestBody UploadFlockQrCodeRequestParameter uploadFlockQrCodeRequestParameter) {
         //接口返回
         Response response = new Response();
-        //上传群二维码请求参数
-        UploadFlockQrCodeRequestParameter uploadFlockQrCodeRequestParameter = null;
-        try {
-            uploadFlockQrCodeRequestParameter = JacksonUtil.json2Bean(body, UploadFlockQrCodeRequestParameter.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            response.setCode(ERROR);
-            return response;
-        }
         //Base64解码器
         BASE64Decoder decoder = new BASE64Decoder();
         //文件输出流
