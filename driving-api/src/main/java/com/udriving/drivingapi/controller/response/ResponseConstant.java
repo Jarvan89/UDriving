@@ -7,17 +7,17 @@ public interface ResponseConstant {
     /**
      * 失败-活动未找到
      */
-    byte SAVE_FAIL = -3;
+    short SAVE_FAIL = -203;
     /**
      * 失败-活动未找到
      */
-    byte ACTIVITY_NOT_FIND = -2;
+    short ACTIVITY_NOT_FIND = -202;
     /**
      * 失败-通用原因未明确的失败均用此值
      */
-    byte ERROR = -1;
+    short ERROR = -201;
     /**
      * 成功
      */
-    byte SUCCEED = 0;
+    short SUCCEED = 0;
 }

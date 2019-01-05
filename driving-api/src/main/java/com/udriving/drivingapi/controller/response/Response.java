@@ -10,7 +10,7 @@ public class Response implements ResponseConstant {
     /**
      * 接口响应状态
      */
-    byte code = SUCCEED;
+    short code = SUCCEED;
     /**
      *
      */
