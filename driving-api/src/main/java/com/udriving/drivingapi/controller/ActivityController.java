@@ -1,6 +1,7 @@
 package com.udriving.drivingapi.controller;
 
 import com.udriving.drivingapi.controller.request.CreateActivityRequestParameter;
+import com.udriving.drivingapi.controller.request.MoidfyActivityRequestParameter;
 import com.udriving.drivingapi.controller.request.UploadFlockQrCodeRequestParameter;
 import com.udriving.drivingapi.controller.response.*;
 import com.udriving.drivingapi.entity.activity.Activity;
@@ -117,6 +118,47 @@ public class ActivityController {
         return response;
     }
 
+    /**
+     * 获取指定id的活动详情
+     *
+     * @return 接口返回结构
+     */
+    @RequestMapping(value = "/moidfyActivity", method = RequestMethod.POST)
+    public Response getActivityDetailById(@RequestBody MoidfyActivityRequestParameter moidfyActivityForRequestParameter) {
+        //接口返回
+        Response response = new Response();
+        Optional<Activity> optional = activityRepository.findById(moidfyActivityForRequestParameter.getId());
+        if (optional == null) {
+            response.setCode(ACTIVITY_NOT_FIND);
+            return response;
+        }
+        Activity activity = optional.get();
+        if (activity == null) {
+            response.setCode(ACTIVITY_NOT_FIND);
+            return response;
+        }
+        activity.setTitle(moidfyActivityForRequestParameter.getTitle());
+        activity.setEstimateCost(moidfyActivityForRequestParameter.getEstimateCost());
+        activity.setCreateUserName(moidfyActivityForRequestParameter.getCreateUserName());
+        activity.setIntroducePicture(moidfyActivityForRequestParameter.getIntroducePicture());
+        activity.setDepartAddressInfo(moidfyActivityForRequestParameter.getDepartAddressInfo());
+        activity.setDestinationAddressInfo(moidfyActivityForRequestParameter.getDestinationAddressInfo());
+        activity.setDepartTimestamp(moidfyActivityForRequestParameter.getDepartTimestamp());
+        activity.setBackTimestamp(moidfyActivityForRequestParameter.getBackTimestamp());
+        // TODO: 2019/1/5 后续实现成员id提取和修改逻辑
+//        activity.setMemberIdList(moidfyActivityForRequestParameter.getMemberIdList());
+        activity.setWeChatFlockQrCode(moidfyActivityForRequestParameter.getWeChatFlockQrCode());
+        activity.setCarNumber(moidfyActivityForRequestParameter.getCarNumber());
+        activity.setPathImage(moidfyActivityForRequestParameter.getPathImage());
+        activity.setNotes(moidfyActivityForRequestParameter.getNotes());
+        activity = activityRepository.save(activity);
+        if (activity == null) {
+            response.setCode(SAVE_FAIL);
+            return response;
+        }
+        response.setData(new MoidfyActivityResponse());
+        return response;
+    }
 
 
     /**
