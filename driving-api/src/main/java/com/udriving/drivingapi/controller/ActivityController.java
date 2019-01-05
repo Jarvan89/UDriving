@@ -2,6 +2,7 @@ package com.udriving.drivingapi.controller;
 
 import com.udriving.drivingapi.controller.request.CreateActivityRequestParameter;
 import com.udriving.drivingapi.controller.request.UploadFlockQrCodeRequestParameter;
+import com.udriving.drivingapi.controller.response.CreateActivityResponse;
 import com.udriving.drivingapi.controller.response.Response;
 import com.udriving.drivingapi.controller.response.UploadFlockQrCodeResponse;
 import com.udriving.drivingapi.entity.activity.Activity;
@@ -68,7 +69,9 @@ public class ActivityController {
         if (activity == null) {
             response.setCode(SAVE_FAIL);
         } else {
-            response.setData(JacksonUtil.toJSONString(activity.getId()));
+            CreateActivityResponse createActivityResponse = new CreateActivityResponse();
+            createActivityResponse.setId(activity.getId());
+            response.setData(createActivityResponse);
         }
         return response;
     }
