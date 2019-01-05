@@ -1,10 +1,11 @@
 package com.udriving.drivingapi.controller.response;
 
 import com.udriving.drivingapi.entity.activity.Activity;
-import lombok.AllArgsConstructor;
+import com.udriving.drivingapi.entity.activity.ActivityForListPage;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -12,11 +13,21 @@ import java.util.List;
  */
 @Getter
 @Setter
-@AllArgsConstructor
 public class ActivityListResponse {
     /**
      * 活动列表
      */
-    private List<Activity> activityList;
+    private List<ActivityForListPage> activityList;
 
+    /**
+     * @param pActivityList
+     */
+    public ActivityListResponse(List<Activity> pActivityList) {
+        if (pActivityList != null) {
+            activityList = new LinkedList<>();
+            for (Activity activity : pActivityList) {
+                activityList.add(ActivityForListPage.convert(activity, "名字尚未确定"));
+            }
+        }
+    }
 }
