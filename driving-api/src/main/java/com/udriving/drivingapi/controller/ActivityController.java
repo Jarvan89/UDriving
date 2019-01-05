@@ -2,11 +2,9 @@ package com.udriving.drivingapi.controller;
 
 import com.udriving.drivingapi.controller.request.CreateActivityRequestParameter;
 import com.udriving.drivingapi.controller.request.UploadFlockQrCodeRequestParameter;
-import com.udriving.drivingapi.controller.response.ActivityListResponse;
-import com.udriving.drivingapi.controller.response.CreateActivityResponse;
-import com.udriving.drivingapi.controller.response.Response;
-import com.udriving.drivingapi.controller.response.UploadFlockQrCodeResponse;
+import com.udriving.drivingapi.controller.response.*;
 import com.udriving.drivingapi.entity.activity.Activity;
+import com.udriving.drivingapi.entity.activity.ActivityForDetail;
 import com.udriving.drivingapi.entity.activity.ActivityRepository;
 import com.udriving.drivingapi.util.JacksonUtil;
 import lombok.extern.log4j.Log4j2;
@@ -82,7 +80,7 @@ public class ActivityController {
      *
      * @return 活动列表
      */
-    @RequestMapping(value = "/queryAllCanApplyActivity", method = RequestMethod.GET)
+    @RequestMapping(value = "/getAllCanApplyActivity", method = RequestMethod.GET)
     public Response queryAllCanApplyActivity(@RequestParam("offset") int offset, @RequestParam("dataSize") byte dataSize) {
         //接口返回
         Response response = new Response();
@@ -94,6 +92,29 @@ public class ActivityController {
             return response;
         }
 
+    }
+
+    /**
+     * 获取指定id的活动详情
+     *
+     * @return 接口返回结构
+     */
+    @RequestMapping(value = "/getActivityDetailById", method = RequestMethod.GET)
+    public Response getActivityDetailById(@RequestParam("id") int id) {
+        //接口返回
+        Response response = new Response();
+        Optional<Activity> optional = activityRepository.findById(id);
+        if (optional == null) {
+            response.setCode(ACTIVITY_NOT_FIND);
+            return response;
+        }
+        Activity activity = optional.get();
+        if (activity == null) {
+            response.setCode(ACTIVITY_NOT_FIND);
+            return response;
+        }
+        response.setData(new ActivityDetailResponse(ActivityForDetail.convert(activity)));
+        return response;
     }
 
 
