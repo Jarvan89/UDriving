@@ -109,8 +109,7 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
         //图片名列表
         List<String> imageNameList = null;
         try {
-            imageNameList = null;
-            JacksonUtil.json2Bean(introducePicture, List.class);
+            imageNameList = JacksonUtil.json2Bean(introducePicture, List.class);
         } catch (IOException e) {
             return null;
         }
@@ -133,6 +132,15 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
             imageNameList.add(imageUrl.substring(imageUrl.lastIndexOf("/") + 1));
         }
         this.introducePicture = JacksonUtil.toJSONString(imageNameList);
+    }
+
+    /**
+     * 设置活动介绍图片
+     *
+     * @param introducePicture 从数据库中读取的活动介绍图片列表
+     */
+    public void setIntroducePicture(String introducePicture) {
+        this.introducePicture = introducePicture;
     }
 
     /**
@@ -159,6 +167,15 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
     }
 
     /**
+     * 设置目的地信息
+     *
+     * @param destinationAddressInfo 从数据库中读取的目的地信息
+     */
+    public void setDestinationAddressInfo(String destinationAddressInfo) {
+        this.destinationAddressInfo = destinationAddressInfo;
+    }
+
+    /**
      * 获取出发地信息
      *
      * @return 出发地信息实体
@@ -179,6 +196,15 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
      */
     public void setDepartAddressInfo(AddressInfo departAddressInfo) {
         this.departAddressInfo = JacksonUtil.toJSONString(departAddressInfo);
+    }
+
+    /**
+     * 设置出发地信息
+     *
+     * @param departAddressInfo 从数据库中读取的出发地信息实体
+     */
+    public void setDepartAddressInfo(String departAddressInfo) {
+        this.departAddressInfo = departAddressInfo;
     }
 
 }
