@@ -4,14 +4,13 @@ import com.udriving.drivingapi.controller.request.CreateActivityRequestParameter
 import com.udriving.drivingapi.controller.request.UploadFlockQrCodeRequestParameter;
 import com.udriving.drivingapi.controller.response.Response;
 import com.udriving.drivingapi.controller.response.UploadFlockQrCodeResponse;
+import com.udriving.drivingapi.entity.activity.Activity;
 import com.udriving.drivingapi.entity.activity.ActivityRepository;
-import com.udriving.drivingapi.entity.activity.UDActiviti;
 import com.udriving.drivingapi.util.JacksonUtil;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Decoder;
 
 import java.io.FileOutputStream;
@@ -25,6 +24,7 @@ import static com.udriving.drivingapi.entity.activity.ActivitiStatusConstant.*;
  * 活动相关接口
  */
 @RestController
+@Log4j2
 public class ActivityController {
     @Autowired
     private ActivityRepository activityRepository;
@@ -45,35 +45,31 @@ public class ActivityController {
      * @return 活动创建操作状态
      */
     @RequestMapping(value = "/createActivity", method = RequestMethod.POST)
-    public Response createActivity(String body) {
-        System.out.println(body);
+    public Response createActivity(@RequestBody CreateActivityRequestParameter createActivityRequestParameter) {
         //接口返回
         Response response = new Response();
-        CreateActivityRequestParameter createActivityRequestParameter = null;
-        try {
-            createActivityRequestParameter = JacksonUtil.json2Bean(body, CreateActivityRequestParameter.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         if (createActivityRequestParameter == null) {
             response.setCode(ERROR);
+            return response;
         }
-
-        UDActiviti udActiviti = new UDActiviti();
-        udActiviti.setCreateUserId(createActivityRequestParameter.getCreateUserId());
-        udActiviti.setName(createActivityRequestParameter.getName());
-        udActiviti.setIntroduce(createActivityRequestParameter.getIntroduce());
-        udActiviti.setDepartLatitude(createActivityRequestParameter.getDepartLatitude());
-        udActiviti.setDepartLongitude(createActivityRequestParameter.getDepartLongitude());
-        udActiviti.setDestinationLatitude(createActivityRequestParameter.getDestinationLatitude());
-        udActiviti.setDestinationLongitude(createActivityRequestParameter.getDestinationLongitude());
-        udActiviti.setEstimateCost(createActivityRequestParameter.getEstimateCost());
-        udActiviti.setIntroducePicture(createActivityRequestParameter.getIntroducePicture());
-        udActiviti.setDepartTimestamp(createActivityRequestParameter.getDepartTimestamp());
-        udActiviti.setBackTimestamp(createActivityRequestParameter.getBackTimestamp());
-        udActiviti.setWeChatFlockQrCode(createActivityRequestParameter.getWeChatFlockQrCode());
-        udActiviti.setStatus(UDActiviti.create);
-        activityRepository.save(udActiviti);
+        Activity activity = new Activity();
+        activity.setCreateUserId(createActivityRequestParameter.getCreateUserId());
+        activity.setTitle(createActivityRequestParameter.getTitle());
+        activity.setIntroduce(createActivityRequestParameter.getIntroduce());
+        activity.setDepartAddressInfo(createActivityRequestParameter.getDepartAddressInfo());
+        activity.setDestinationAddressInfo(createActivityRequestParameter.getDestinationAddressInfo());
+        activity.setEstimateCost(createActivityRequestParameter.getEstimateCost());
+        activity.setIntroducePicture(createActivityRequestParameter.getIntroducePicture());
+        activity.setDepartTimestamp(createActivityRequestParameter.getDepartTimestamp());
+        activity.setBackTimestamp(createActivityRequestParameter.getBackTimestamp());
+        activity.setStatus(Activity.CREATE);
+        activity = activityRepository.save(activity);
+        //存储失败
+        if (activity == null) {
+            response.setCode(SAVE_FAIL);
+        } else {
+            response.setData(JacksonUtil.toJSONString(activity.getId()));
+        }
         return response;
     }
 
@@ -83,7 +79,7 @@ public class ActivityController {
      * @return 活动列表
      */
     @RequestMapping(value = "/queryAllActivity", method = RequestMethod.GET)
-    public Response queryAllActivity() {
+    public Response queryAllActivity(@RequestParam("offset") int offset, @RequestParam("count") int count) {
         //接口返回
         Response response = new Response();
         response.setData(activityRepository.findAll());
@@ -96,10 +92,10 @@ public class ActivityController {
      * @return 活动列表
      */
     @RequestMapping(value = "/queryAllCanApplyActivity", method = RequestMethod.GET)
-    public Response queryAllCanApplyActivity() {
+    public Response queryAllCanApplyActivity(@RequestParam("offset") int offset, @RequestParam("count") int count) {
         //接口返回
         Response response = new Response();
-        response.setData(activityRepository.findByStatus(release));
+        response.setData(activityRepository.findByStatus(RELEASE));
         return response;
     }
 
@@ -109,10 +105,10 @@ public class ActivityController {
      * @return 活动列表
      */
     @RequestMapping(value = "/queryAllDoneActivity", method = RequestMethod.GET)
-    public Response queryAllDoneActivity() {
+    public Response queryAllDoneActivity(@RequestParam("offset") int offset, @RequestParam("count") int count) {
         //接口返回
         Response response = new Response();
-        response.setData(activityRepository.findByStatus(finish));
+        response.setData(activityRepository.findByStatus(FINISH));
         return response;
     }
 
@@ -122,10 +118,10 @@ public class ActivityController {
      * @return 活动列表
      */
     @RequestMapping(value = "/queryAllDeleteActivity", method = RequestMethod.GET)
-    public Response queryAllDeleteActivity() {
+    public Response queryAllDeleteActivity(@RequestParam("offset") int offset, @RequestParam("count") int count) {
         //接口返回
         Response response = new Response();
-        response.setData(activityRepository.findByStatus(delete));
+        response.setData(activityRepository.findByStatus(DELETE));
         return response;
     }
 
@@ -171,9 +167,9 @@ public class ActivityController {
 //            }
 
 //        }
-        UDActiviti udActiviti = activityRepository.getOne(uploadFlockQrCodeRequestParameter.getAcitivityId());
-        udActiviti.setWeChatFlockQrCode(qrCodeFileName);
-        activityRepository.save(udActiviti);
+        Activity activity = activityRepository.getOne(uploadFlockQrCodeRequestParameter.getAcitivityId());
+        activity.setWeChatFlockQrCode(qrCodeFileName);
+        activityRepository.save(activity);
         UploadFlockQrCodeResponse uploadFlockQrCodeResponse = new UploadFlockQrCodeResponse();
         uploadFlockQrCodeResponse.setFileName(qrCodeFileName);
         // TODO: 2018/12/22 后续需要重新梳理图片路径的拼接问题
@@ -192,7 +188,7 @@ public class ActivityController {
     public Response deleteActivityById(int id) {
         //接口返回
         Response response = new Response();
-        byte operationCode = modifiActivityStatusById(id, delete);
+        short operationCode = modifiActivityStatusById(id, DELETE);
         if (operationCode != SUCCEED) {
             response.setCode(operationCode);
         }
@@ -208,7 +204,7 @@ public class ActivityController {
     public Response approvalActivityById(int id) {
         //接口返回
         Response response = new Response();
-        byte operationCode = modifiActivityStatusById(id, release);
+        short operationCode = modifiActivityStatusById(id, RELEASE);
         if (operationCode != SUCCEED) {
             response.setCode(operationCode);
         }
@@ -224,7 +220,7 @@ public class ActivityController {
     public Response queryActivityById(int id) {
         //接口返回
         Response response = new Response();
-        Optional<UDActiviti> optional = activityRepository.findById(id);
+        Optional<Activity> optional = activityRepository.findById(id);
         response.setData(optional.get());
         return response;
     }
@@ -236,15 +232,15 @@ public class ActivityController {
      * @param status 要修改的状态
      * @return 操作结果状态码
      */
-    private byte modifiActivityStatusById(int id, byte status) {
-        Optional<UDActiviti> optional = activityRepository.findById(id);
-        UDActiviti udActiviti = optional.get();
-        if (udActiviti == null) {
+    private short modifiActivityStatusById(int id, byte status) {
+        Optional<Activity> optional = activityRepository.findById(id);
+        Activity activity = optional.get();
+        if (activity == null) {
             return ACTIVITY_NOT_FIND;
         }
-        udActiviti.setStatus(status);
-        udActiviti = activityRepository.save(udActiviti);
-        if (udActiviti == null) {
+        activity.setStatus(status);
+        activity = activityRepository.save(activity);
+        if (activity == null) {
             return SAVE_FAIL;
         }
         return SUCCEED;
