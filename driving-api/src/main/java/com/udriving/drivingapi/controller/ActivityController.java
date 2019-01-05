@@ -17,7 +17,8 @@ import java.io.FileOutputStream;
 import java.util.Optional;
 
 import static com.udriving.drivingapi.controller.response.ResponseConstant.*;
-import static com.udriving.drivingapi.entity.activity.ActivitiStatusConstant.*;
+import static com.udriving.drivingapi.entity.activity.ActivitiStatusConstant.CREATE;
+import static com.udriving.drivingapi.entity.activity.ActivitiStatusConstant.RELEASE;
 
 /**
  * 活动相关接口
@@ -195,30 +196,12 @@ public class ActivityController {
         Activity activity = activityRepository.getOne(uploadFlockQrCodeRequestParameter.getAcitivityId());
         activity.setWeChatFlockQrCode(qrCodeFileName);
         activityRepository.save(activity);
-        UploadFlockQrCodeResponse uploadFlockQrCodeResponse = new UploadFlockQrCodeResponse();
-        uploadFlockQrCodeResponse.setFileName(qrCodeFileName);
         // TODO: 2018/12/22 后续需要重新梳理图片路径的拼接问题
-        uploadFlockQrCodeResponse.setFileUrl(systemDomain + flockQrCodeStoragePath + qrCodeFileName);
-        response.setData(uploadFlockQrCodeResponse);
+        response.setData(new UploadImageResponse(systemDomain + flockQrCodeStoragePath + qrCodeFileName));
         return response;
     }
 
 
-    /**
-     * 删除指定活动
-     *
-     * @return 操作结果
-     */
-    @RequestMapping(value = "/deleteActivityById", method = RequestMethod.POST)
-    public Response deleteActivityById(int id) {
-        //接口返回
-        Response response = new Response();
-        short operationCode = modifiActivityStatusById(id, DELETE);
-        if (operationCode != SUCCEED) {
-            response.setCode(operationCode);
-        }
-        return response;
-    }
 
     /**
      * 审批指定活动
