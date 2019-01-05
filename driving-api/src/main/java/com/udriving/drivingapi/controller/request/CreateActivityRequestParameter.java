@@ -1,49 +1,41 @@
 package com.udriving.drivingapi.controller.request;
 
-import lombok.Data;
+import com.udriving.drivingapi.entity.activity.AddressInfo;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 /**
  * 新建活动接口请求参数
  */
-@Data
+@Setter
+@Getter
 public class CreateActivityRequestParameter {
+    /**
+     * 活动名
+     */
+    private String title;
+    /**
+     * 活动介绍图片
+     */
+    private List<String> introducePicture;
     /**
      * 创建人用户id
      */
     private String createUserId;
     /**
-     * 活动名
+     * 创建人昵称
      */
-    private String name;
+    private String createNikeName;
     /**
-     * 活动介绍
+     * 出发地信息
      */
-    private String introduce;
+    private AddressInfo departAddressInfo;
     /**
-     * 出发点纬度
+     * 目的地信息
      */
-    private float departLatitude;
-    /**
-     * 出发点经度
-     */
-    private float departLongitude;
-
-    /**
-     * 目的地纬度
-     */
-    private float destinationLatitude;
-    /**
-     * 目的地经度
-     */
-    private float destinationLongitude;
-    /**
-     * 预估费用
-     */
-    private float estimateCost;
-    /**
-     * 活动介绍图片
-     */
-    private String introducePicture;
+    private AddressInfo destinationAddressInfo;
     /**
      * 出发时间
      */
@@ -53,7 +45,19 @@ public class CreateActivityRequestParameter {
      */
     private long backTimestamp;
     /**
-     * 微信群聊二维码
+     * 预估费用
      */
-    private String weChatFlockQrCode;
+    private float estimateCost;
+    /**
+     * 活动介绍
+     */
+    private String introduce;
+    /**
+     * 注意事项
+     */
+    private String notes;
+    /**
+     * 途径地坐标
+     */
+    private List<AddressInfo> approachCoordinate;
 }
