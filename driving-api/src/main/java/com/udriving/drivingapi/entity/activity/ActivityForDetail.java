@@ -31,6 +31,14 @@ public class ActivityForDetail extends BaseActivity {
     /**
      * 出发时间
      */
+    private long departTimestamp;
+    /**
+     * 返回时间
+     */
+    private long backTimestamp;
+    /**
+     * 出发时间
+     */
     private String departTime;
     /**
      * 返回时间
@@ -83,6 +91,8 @@ public class ActivityForDetail extends BaseActivity {
         activityForDetail.setCreateUserId(activity.getCreateUserId());
         activityForDetail.setDepartAddressInfo(activity.getDepartAddressInfo());
         activityForDetail.setDestinationAddressInfo(activity.getDestinationAddressInfo());
+        activityForDetail.setDepartTimestamp(activity.getDepartTimestamp());
+        activityForDetail.setBackTimestamp(activity.getBackTimestamp());
         activityForDetail.setDepartTime(formatYYYYMMDDHHMMSS(activity.getDepartTimestamp()));
         activityForDetail.setBackTime(formatYYYYMMDDHHMMSS(activity.getBackTimestamp()));
         activityForDetail.setDays(countDays(activity.getBackTimestamp(), activity.getDepartTimestamp()));
