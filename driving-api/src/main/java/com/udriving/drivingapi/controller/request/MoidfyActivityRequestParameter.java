@@ -27,10 +27,6 @@ public class MoidfyActivityRequestParameter {
      */
     private String createUserName;
     /**
-     * 活动介绍图片
-     */
-    private List<String> introducePicture;
-    /**
      * 出发地信息
      */
     private AddressInfo departAddressInfo;
@@ -51,17 +47,9 @@ public class MoidfyActivityRequestParameter {
      */
     private List<String> memberIdList;
     /**
-     * 微信群聊二维码
-     */
-    private String weChatFlockQrCode;
-    /**
      * 参加活动的车辆id
      */
     private List<String> carNumber;
-    /**
-     * 路线图片
-     */
-    private String pathImage;
     /**
      * 注意事项
      */

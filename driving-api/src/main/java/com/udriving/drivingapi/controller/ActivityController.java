@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Decoder;
 
 import java.io.FileOutputStream;
+import java.util.List;
 import java.util.Optional;
 
 import static com.udriving.drivingapi.controller.response.ResponseConstant.*;
@@ -139,16 +140,13 @@ public class ActivityController {
         activity.setTitle(moidfyActivityForRequestParameter.getTitle());
         activity.setEstimateCost(moidfyActivityForRequestParameter.getEstimateCost());
         activity.setCreateUserName(moidfyActivityForRequestParameter.getCreateUserName());
-        activity.setIntroducePicture(moidfyActivityForRequestParameter.getIntroducePicture());
         activity.setDepartAddressInfo(moidfyActivityForRequestParameter.getDepartAddressInfo());
         activity.setDestinationAddressInfo(moidfyActivityForRequestParameter.getDestinationAddressInfo());
         activity.setDepartTimestamp(moidfyActivityForRequestParameter.getDepartTimestamp());
         activity.setBackTimestamp(moidfyActivityForRequestParameter.getBackTimestamp());
         // TODO: 2019/1/5 后续实现成员id提取和修改逻辑
 //        activity.setMemberIdList(moidfyActivityForRequestParameter.getMemberIdList());
-        activity.setWeChatFlockQrCode(moidfyActivityForRequestParameter.getWeChatFlockQrCode());
         activity.setCarNumber(moidfyActivityForRequestParameter.getCarNumber());
-        activity.setPathImage(moidfyActivityForRequestParameter.getPathImage());
         activity.setNotes(moidfyActivityForRequestParameter.getNotes());
         activity = activityRepository.save(activity);
         if (activity == null) {
@@ -195,6 +193,57 @@ public class ActivityController {
 //        }
         Activity activity = activityRepository.getOne(uploadFlockQrCodeRequestParameter.getAcitivityId());
         activity.setWeChatFlockQrCode(qrCodeFileName);
+        activityRepository.save(activity);
+        // TODO: 2018/12/22 后续需要重新梳理图片路径的拼接问题
+        response.setData(new UploadImageResponse(systemDomain + flockQrCodeStoragePath + qrCodeFileName));
+        return response;
+    }
+
+    /**
+     * 上传活动介绍图片
+     *
+     * @return 活动小群二维码信息数据结构
+     */
+    @RequestMapping(value = "/uploadIntroducePicture", method = RequestMethod.POST)
+    public Response uploadIntroducePicture(@RequestBody UploadFlockQrCodeRequestParameter uploadFlockQrCodeRequestParameter) {
+        //接口返回
+        Response response = new Response();
+        //Base64解码器
+        BASE64Decoder decoder = new BASE64Decoder();
+        //文件输出流
+        FileOutputStream write = null;
+        //二维码文件名
+        String qrCodeFileName = null;
+//        try {
+        qrCodeFileName = DigestUtils.md5Hex(String.valueOf(System.currentTimeMillis()));
+//            write = new FileOutputStream(new File(flockQrCodeStoragePath + qrCodeFileName));
+//            byte[] decoderBytes = decoder.decodeBuffer(uploadFlockQrCodeRequestParameter.getQrCodeBase64Code());
+//            write.write(decoderBytes);
+
+//        } catch (IOException e) {
+//        } finally {
+//            if (write != null) {
+//                try {
+//                    write.close();
+//                } catch (IOException e) {
+//                    response.setCode(Response.ERROR);
+//                    return response;
+//                }
+//            }
+
+//        }
+        Activity activity = activityRepository.getOne(uploadFlockQrCodeRequestParameter.getAcitivityId());
+        if (activity == null) {
+            response.setCode(ACTIVITY_NOT_FIND);
+            return response;
+        }
+        List<String> introducePicture = activity.getIntroducePicture();
+        if (introducePicture == null) {
+            response.setCode(SAVE_FAIL);
+            return response;
+        }
+
+        introducePicture.add(qrCodeFileName);
         activityRepository.save(activity);
         // TODO: 2018/12/22 后续需要重新梳理图片路径的拼接问题
         response.setData(new UploadImageResponse(systemDomain + flockQrCodeStoragePath + qrCodeFileName));
