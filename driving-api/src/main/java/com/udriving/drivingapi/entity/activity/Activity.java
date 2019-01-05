@@ -19,6 +19,11 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
     @Column
     private String createUserId;
     /**
+     * 创建人用户名，该名仅针对本次活动有效
+     */
+    @Column
+    private String createUserName;
+    /**
      * 活动介绍
      */
     @Column

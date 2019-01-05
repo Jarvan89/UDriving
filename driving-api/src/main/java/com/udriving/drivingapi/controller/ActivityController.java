@@ -56,6 +56,7 @@ public class ActivityController {
         }
         Activity activity = new Activity();
         activity.setCreateUserId(createActivityRequestParameter.getCreateUserId());
+        activity.setCreateUserName(createActivityRequestParameter.getCreateNikeName());
         activity.setTitle(createActivityRequestParameter.getTitle());
         activity.setIntroduce(createActivityRequestParameter.getIntroduce());
         activity.setDepartAddressInfo(createActivityRequestParameter.getDepartAddressInfo());
