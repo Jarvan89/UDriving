@@ -5,7 +5,7 @@ package com.udriving.drivingapi.controller.response;
  */
 public interface ResponseConstant {
     /**
-     * 失败-活动未找到
+     * 失败-存储失败
      */
     short SAVE_FAIL = -203;
     /**
