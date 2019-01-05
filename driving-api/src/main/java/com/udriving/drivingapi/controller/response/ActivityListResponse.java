@@ -26,7 +26,7 @@ public class ActivityListResponse {
         if (pActivityList != null) {
             activityList = new LinkedList<>();
             for (Activity activity : pActivityList) {
-                activityList.add(ActivityForListPage.convert(activity, "名字尚未确定"));
+                activityList.add(ActivityForListPage.convert(activity));
             }
         }
     }

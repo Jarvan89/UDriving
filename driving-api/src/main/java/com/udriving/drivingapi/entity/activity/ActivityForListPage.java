@@ -37,60 +37,31 @@ public class ActivityForListPage extends BaseActivity {
      */
     private String backTime;
 
-    public static final ActivityForListPage convert(Activity activity, String createUserName) {
+    public static final ActivityForListPage convert(Activity activity) {
         if (activity == null) {
             return null;
         }
         ActivityForListPage activityForListPage = new ActivityForListPage();
-
-        /**
-         * 活动id
-         */
         activityForListPage.setId(activity.getId());
-        /**
-         * 活动名
-         */
         activityForListPage.setTitle(activity.getTitle());
-        /**
-         * 距离
-         */
         activityForListPage.setDistance(activity.getDistance());
-        /**
-         * 预估费用
-         */
         activityForListPage.setEstimateCost(activity.getEstimateCost());
-        /**
-         * 目的地城市
-         */
+        //地址信息，此处取的是目的地地址信息
         AddressInfo addressInfo = activity.getDestinationAddressInfo();
         if (addressInfo != null) {
             activityForListPage.setDestinationCity(addressInfo.getCity());
             activityForListPage.setDestinationProvince(addressInfo.getProvince());
         }
+        //此处取的是出发地地址信息
         addressInfo = activity.getDepartAddressInfo();
         if (addressInfo != null) {
             activityForListPage.setDepartCity(addressInfo.getCity());
         }
-        /**
-         * 创建人名
-         */
-        activityForListPage.setCreateUserName(createUserName);
+        activityForListPage.setCreateUserName(activity.getCreateUserName());
         activityForListPage.setDays(countDays(activity.getBackTimestamp(), activity.getDepartTimestamp()));
-        /**
-         * 查看次数
-         */
         activityForListPage.setLookOverNumber(activity.getLookOverNumber());
-        /**
-         * 活动宣传图片
-         */
         activityForListPage.setImageUrl(activity.getIntroducePicture());
-        /**
-         *出发时间
-         */
         activityForListPage.setDepartTime(formatYYYYMMDDHHMMSS(activity.getDepartTimestamp()));
-        /**
-         *返回时间
-         */
         activityForListPage.setBackTime(formatYYYYMMDDHHMMSS(activity.getBackTimestamp()));
         return activityForListPage;
     }
