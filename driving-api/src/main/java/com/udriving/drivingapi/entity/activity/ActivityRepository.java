@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 活动实体类数据库操作接口
  */
-public interface ActivityRepository extends JpaRepository<Activity, Integer> {
+public interface ActivityRepository extends JpaRepository<Activity, Long> {
     /**
      * 根据活动状态查询活动列表
      *
@@ -78,4 +78,11 @@ public interface ActivityRepository extends JpaRepository<Activity, Integer> {
      */
     @Query(value = "select * from activitys WHERE status <= :status ORDER BY id DESC LIMIT :dataSize", nativeQuery = true)
     List<Activity> findLessStatusActivityList(@Param("status") byte status, @Param("dataSize") byte dataSize);
+    /**
+     * 查询Id最大的活动
+     *
+     * @return 活动
+     */
+    @Query(value = "select * from activitys  ORDER BY id DESC LIMIT 1", nativeQuery = true)
+    Activity findIdMaxActivity();
 }

@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Decoder;
 
 import java.io.FileOutputStream;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.udriving.drivingapi.controller.response.ResponseConstant.*;
 import static com.udriving.drivingapi.entity.activity.ActivitiStatusConstant.*;
@@ -47,7 +45,7 @@ public class ActivityController {
      * @return 活动创建操作状态
      */
     @RequestMapping(value = "/createActivity", method = RequestMethod.POST)
-    public Response createActivity(@RequestBody CreateActivityRequestParameter createActivityRequestParameter) {
+    public synchronized Response createActivity(@RequestBody CreateActivityRequestParameter createActivityRequestParameter) {
         //接口返回
         Response response = new Response();
         if (createActivityRequestParameter == null) {
@@ -55,6 +53,7 @@ public class ActivityController {
             return response;
         }
         Activity activity = new Activity();
+        activity.setId(generateNewId());
         activity.setCreateUserId(createActivityRequestParameter.getCreateUserId());
         activity.setCreateUserName(createActivityRequestParameter.getCreateNikeName());
         activity.setTitle(createActivityRequestParameter.getTitle());
@@ -75,6 +74,102 @@ public class ActivityController {
             response.setData(new CreateActivityResponse(activity.getId()));
         }
         return response;
+    }
+
+    /**
+     * 生成新活动id
+     *
+     * @return 新活动id
+     */
+    private long generateNewId() {
+        //代表当前日期的日历类
+        Calendar calendar = GregorianCalendar.getInstance();
+        //用于将当前日期的年月日时分秒数字拼接成字符串的字符串缓冲区
+        StringBuilder stringBuilder = new StringBuilder();
+        //提取年
+        stringBuilder.append(calendar.get(Calendar.YEAR));
+        //提取月份值若月份不足2位补0
+        if ((calendar.get(Calendar.MONTH) + 1) < 10) {
+            stringBuilder.append(0);
+        }
+        stringBuilder.append((calendar.get(Calendar.MONTH) + 1));
+        //提取日期值，若不足两位后面补0
+        if ((calendar.get(Calendar.DAY_OF_MONTH)) < 10) {
+            stringBuilder.append(0);
+        }
+        stringBuilder.append((calendar.get(Calendar.DAY_OF_MONTH)));
+        //提取小时值，若不足两位后面补0
+        if ((calendar.get(Calendar.HOUR_OF_DAY)) < 10) {
+            stringBuilder.append(0);
+        }
+        stringBuilder.append((calendar.get(Calendar.HOUR_OF_DAY)));
+        //提取分钟值，若不足两位后面补0
+        if ((calendar.get(Calendar.MINUTE)) < 10) {
+            stringBuilder.append(0);
+        }
+        stringBuilder.append((calendar.get(Calendar.MINUTE)));
+        //id最大的活动
+        Activity idMaxActivity = activityRepository.findIdMaxActivity();
+        //新活动id
+        long newActivityId = 0;
+        //活动未空是生成一个新的流水号
+        if (idMaxActivity == null) {
+            newActivityId = Long.valueOf(stringBuilder.append("0001").toString());
+            //未找到指定活动时说明新id有效，返回给调用层
+            if (checkActivityInexistence(newActivityId)) {
+                return newActivityId;
+            }
+            //未返回说id无效，递归调用，重新生成。
+            return generateNewId();
+        }
+        //id最大的活动的活动id
+        long id = idMaxActivity.getId();
+        //计算出活动创建时间
+        long lastActivityCreateTime = id / 10000;
+        //当前时间数值表示
+        long currentTime = Long.valueOf(stringBuilder.toString());
+        //如果当前时间和id最大的活动创建日期不是一天则生成新的流水
+        if (currentTime != lastActivityCreateTime) {
+            newActivityId = Long.valueOf(stringBuilder.append("0001").toString());
+            //未找到指定活动时说明新id有效，返回给调用层
+            if (checkActivityInexistence(newActivityId)) {
+                return newActivityId;
+            }
+            //未返回说id无效，递归调用，重新生成。
+            return generateNewId();
+        }
+        //如果创建日期是同一天则取id最大的活动的流水号
+        newActivityId = (id % 10000) + 1;
+        //用于构造新活动id字符串表示形式的字符串缓冲区
+        StringBuilder newActivityIdBuilder = new StringBuilder();
+        newActivityIdBuilder.append(currentTime);
+        //计算缺多少个0
+        int zeroNumber = 4 - String.valueOf(newActivityId).length();
+        //循环补0
+        for (int i = 0; i < zeroNumber; i++) {
+            newActivityIdBuilder.append("0");
+        }
+        newActivityId = Long.valueOf(newActivityIdBuilder.append(newActivityId).toString());
+        //未找到指定活动时说明新id有效，返回给调用层
+        if (checkActivityInexistence(newActivityId)) {
+            return newActivityId;
+        }
+        //未返回说id无效，递归调用，重新生成。
+        return generateNewId();
+    }
+
+    /**
+     * 检查指定id的活动是否不存在
+     *
+     * @param id 活动id
+     * @return true:不存在
+     */
+    private boolean checkActivityInexistence(long id) {
+        Optional<Activity> optional = activityRepository.findById(id);
+        if (optional != null) {
+            return !optional.isPresent();
+        }
+        return true;
     }
 
     /**
@@ -102,7 +197,7 @@ public class ActivityController {
      * @return 接口返回结构
      */
     @RequestMapping(value = "/getActivityDetailById", method = RequestMethod.GET)
-    public Response getActivityDetailById(@RequestParam("id") int id) {
+    public Response getActivityDetailById(@RequestParam("id") long id) {
         //接口返回
         Response response = new Response();
         Optional<Activity> optional = activityRepository.findById(id);
@@ -351,7 +446,7 @@ public class ActivityController {
      * @return 操作结果
      */
     @RequestMapping(value = "/applyActivityById", method = RequestMethod.GET)
-    public Response applyActivityById(@RequestParam("id") int id, @RequestParam("currentUserId") int currentUserId) {
+    public Response applyActivityById(@RequestParam("id") long id, @RequestParam("currentUserId") int currentUserId) {
         //接口返回
         Response response = new Response();
         Optional<Activity> operation = activityRepository.findById(id);
@@ -378,6 +473,7 @@ public class ActivityController {
         response.setData(new MoidfyActivityResponse());
         return response;
     }
+
     /**
      * 修改活动状态
      *
@@ -385,7 +481,7 @@ public class ActivityController {
      * @param status 要修改的状态
      * @return 操作结果状态码
      */
-    private short modifiActivityStatusById(int id, byte status) {
+    private short modifiActivityStatusById(long id, byte status) {
         Optional<Activity> optional = activityRepository.findById(id);
         Activity activity = optional.get();
         if (activity == null) {

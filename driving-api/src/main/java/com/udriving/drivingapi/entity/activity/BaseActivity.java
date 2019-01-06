@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 /**
@@ -14,16 +13,10 @@ import javax.persistence.Id;
 @Entity(name = "activitys")
 public class BaseActivity {
     /**
-     * 数据库自增id
+     * 活动id（年月日时分秒+流水，流水号为4位）
      */
     @Id
-    @GeneratedValue
-    protected Integer id;
-    /**
-     * 活动id
-     */
-    @Column
-    protected Long activityId;
+    protected Long id;
     /**
      * 活动名
      */

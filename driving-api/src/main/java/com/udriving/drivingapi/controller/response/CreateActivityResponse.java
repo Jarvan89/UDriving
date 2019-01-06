@@ -14,5 +14,5 @@ public class CreateActivityResponse {
     /**
      * 活动id
      */
-    private int id;
+    private long id;
 }
