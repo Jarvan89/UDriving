@@ -36,6 +36,44 @@ public interface ActivityRepository extends JpaRepository<Activity, Integer> {
      * @param dataSize 指定活动数量
      * @return 活动列表
      */
-    @Query(value = "select * from activitys WHERE id <= :startId AND status = :status ORDER BY id DESC LIMIT :dataSize", nativeQuery = true)
+    @Query(value = "select * from activitys WHERE id < :startId AND status = :status ORDER BY id DESC LIMIT :dataSize", nativeQuery = true)
     List<Activity> queryAllCanApplyActivity(@Param("startId") int startId, @Param("status") byte status, @Param("dataSize") byte dataSize);
+
+    /**
+     * 根据起始id、创建用户id查询最多指定数量的活动列表
+     *
+     * @param startId      起始活动id
+     * @param createUserId 活动创建用户id
+     * @param dataSize     数据量
+     * @return 活动列表
+     */
+    List<Activity> findActivityByCreateUserId(@Param("startId") int startId, @Param("createUserId") int createUserId, @Param("dataSize") byte dataSize);
+
+    /**
+     * 根据创建用户id查询最多指定数量的活动列表
+     *
+     * @param createUserId 活动创建用户id
+     * @param dataSize     数据量
+     * @return 活动列表
+     */
+    List<Activity> findActivityByCreateUserId(@Param("createUserId") int createUserId, @Param("dataSize") byte dataSize);
+
+    /**
+     * 查询小于指定id和最多指定数量的小于某个状态值得活动列表
+     *
+     * @param startId  起始活动id
+     * @param dataSize 数据量
+     * @return 活动列表
+     */
+    @Query(value = "select * from activitys WHERE status <= :status AND id < :startId ORDER BY id DESC LIMIT :dataSize", nativeQuery = true)
+    List<Activity> findLessStatusActivityList(@Param("startId") int startId, @Param("status") byte status, @Param("dataSize") byte dataSize);
+
+    /**
+     * 查询最多指定数量的小于某个状态值的活动列表
+     *
+     * @param dataSize 数据量
+     * @return 活动列表
+     */
+    @Query(value = "select * from activitys WHERE status <= :status ORDER BY id DESC LIMIT :dataSize", nativeQuery = true)
+    List<Activity> findLessStatusActivityList(@Param("status") byte status, @Param("dataSize") byte dataSize);
 }
