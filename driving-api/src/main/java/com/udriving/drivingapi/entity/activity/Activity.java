@@ -18,7 +18,7 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
      * 创建人用户id
      */
     @Column
-    private String createUserId;
+    private long createUserId;
     /**
      * 活动介绍
      */
@@ -83,7 +83,7 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
      * 修改人用户id
      */
     @Column
-    private String modifyUserId;
+    private long modifyUserId;
     /**
      * 微信群聊二维码
      */

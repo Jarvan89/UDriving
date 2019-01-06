@@ -20,7 +20,7 @@ public class ActivityForDetail extends BaseActivity {
     /**
      * 创建人用户id
      */
-    private String createUserId;
+    private long createUserId;
     /**
      * 出发地信息
      */

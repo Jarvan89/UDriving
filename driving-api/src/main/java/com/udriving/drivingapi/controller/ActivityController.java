@@ -371,7 +371,7 @@ public class ActivityController {
     }
 
     /**
-     * 获取所有需要审核的活动
+     * 获取所有未审核的活动
      *
      * @return 接口返回结构
      */
@@ -446,7 +446,7 @@ public class ActivityController {
      * @return 操作结果
      */
     @RequestMapping(value = "/applyActivityById", method = RequestMethod.GET)
-    public Response applyActivityById(@RequestParam("id") long id, @RequestParam("currentUserId") int currentUserId) {
+    public Response applyActivityById(@RequestParam("id") long id, @RequestParam("currentUserId") long currentUserId) {
         //接口返回
         Response response = new Response();
         Optional<Activity> operation = activityRepository.findById(id);

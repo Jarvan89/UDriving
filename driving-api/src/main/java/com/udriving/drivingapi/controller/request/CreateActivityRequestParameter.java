@@ -23,7 +23,7 @@ public class CreateActivityRequestParameter {
     /**
      * 创建人用户id
      */
-    private String createUserId;
+    private long createUserId;
     /**
      * 创建人昵称
      */
