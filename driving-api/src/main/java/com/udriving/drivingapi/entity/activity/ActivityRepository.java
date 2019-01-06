@@ -47,6 +47,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Integer> {
      * @param dataSize     数据量
      * @return 活动列表
      */
+    @Query(value = "select * from activitys WHERE createUserId = :createUserId AND id < :startId ORDER BY id DESC LIMIT :dataSize", nativeQuery = true)
     List<Activity> findActivityByCreateUserId(@Param("startId") int startId, @Param("createUserId") int createUserId, @Param("dataSize") byte dataSize);
 
     /**
@@ -56,6 +57,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Integer> {
      * @param dataSize     数据量
      * @return 活动列表
      */
+    @Query(value = "select * from activitys WHERE createUserId = :createUserId ORDER BY id DESC LIMIT :dataSize", nativeQuery = true)
     List<Activity> findActivityByCreateUserId(@Param("createUserId") int createUserId, @Param("dataSize") byte dataSize);
 
     /**
