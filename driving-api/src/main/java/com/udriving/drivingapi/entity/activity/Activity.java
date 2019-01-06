@@ -115,6 +115,11 @@ public class Activity extends BaseActivity implements ActivitiStatusConstant {
      */
     @Column
     private String notes;
+    /**
+     * 审批意见
+     */
+    @Column
+    private String approveOpinion;
 
     /**
      * 获取活动介绍图片

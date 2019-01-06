@@ -2,6 +2,7 @@ package com.udriving.drivingapi.entity.activity;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.util.List;
 
 import static com.udriving.drivingapi.util.DateUtil.countDays;
@@ -72,6 +73,11 @@ public class ActivityForDetail extends BaseActivity {
      * 注意事项
      */
     private String notes;
+    /**
+     * 审批意见
+     */
+    @Column
+    private String approveOpinion;
 
     /**
      * @param activity
@@ -103,6 +109,7 @@ public class ActivityForDetail extends BaseActivity {
         activityForDetail.setCarNumber(activity.getCarNumber());
         activityForDetail.setPathImage(activity.getPathImage());
         activityForDetail.setNotes(activity.getNotes());
+        activityForDetail.setApproveOpinion(activity.getApproveOpinion());
         return activityForDetail;
     }
 
