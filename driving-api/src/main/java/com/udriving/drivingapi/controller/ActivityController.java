@@ -405,7 +405,9 @@ public class ActivityController {
         short operationCode = modifiActivityStatusById(id, RELEASE);
         if (operationCode != SUCCEED) {
             response.setCode(operationCode);
+            return response;
         }
+        response.setData(new MoidfyActivityResponse());
         return response;
     }
 
