@@ -12,7 +12,7 @@ public class RefuseApprovalActivityRequestParameter {
     /**
      * 活动id
      */
-    private Integer id;
+    private Long id;
     /**
      * 审批意见
      */

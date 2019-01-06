@@ -14,10 +14,6 @@ import static com.udriving.drivingapi.util.DateUtil.formatYYYYMMDDHHMMSS;
 @Data
 public class ActivityForListPage extends BaseActivity {
     /**
-     * 创建人名
-     */
-    private String createUserName;
-    /**
      * 活动天数
      */
     private short days;
@@ -41,13 +37,12 @@ public class ActivityForListPage extends BaseActivity {
     /**
      * 目的地省份
      */
-    @Column
-    protected String destinationProvince;
+
+    private String destinationProvince;
     /**
      * 出发地城市
      */
-    @Column
-    protected String departCity;
+    private String departCity;
     /**
      * 活动介绍图片
      */

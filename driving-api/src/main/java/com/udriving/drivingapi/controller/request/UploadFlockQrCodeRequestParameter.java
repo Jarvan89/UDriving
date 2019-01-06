@@ -10,7 +10,7 @@ public class UploadFlockQrCodeRequestParameter {
     /**
      * 活动id
      */
-    private Integer acitivityId;
+    private Long acitivityId;
 
     /**
      * 二维码文件的Base64编码字符串

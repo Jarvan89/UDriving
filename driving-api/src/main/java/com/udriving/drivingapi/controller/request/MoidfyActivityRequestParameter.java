@@ -13,7 +13,7 @@ public class MoidfyActivityRequestParameter {
     /**
      * 活动id
      */
-    protected Integer id;
+    protected Long id;
     /**
      * 活动名
      */
