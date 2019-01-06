@@ -2,7 +2,6 @@ package com.udriving.drivingapi.entity.activity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.util.List;
 
 import static com.udriving.drivingapi.util.DateUtil.countDays;
@@ -76,7 +75,6 @@ public class ActivityForDetail extends BaseActivity {
     /**
      * 审批意见
      */
-    @Column
     private String approveOpinion;
 
     /**
