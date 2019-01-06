@@ -2,6 +2,7 @@ package com.udriving.drivingapi.controller;
 
 import com.udriving.drivingapi.controller.request.CreateActivityRequestParameter;
 import com.udriving.drivingapi.controller.request.MoidfyActivityRequestParameter;
+import com.udriving.drivingapi.controller.request.RefuseApprovalActivityRequestParameter;
 import com.udriving.drivingapi.controller.request.UploadFlockQrCodeRequestParameter;
 import com.udriving.drivingapi.controller.response.*;
 import com.udriving.drivingapi.entity.activity.Activity;
@@ -14,12 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Decoder;
 
 import java.io.FileOutputStream;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 import static com.udriving.drivingapi.controller.response.ResponseConstant.*;
-import static com.udriving.drivingapi.entity.activity.ActivitiStatusConstant.CREATE;
-import static com.udriving.drivingapi.entity.activity.ActivitiStatusConstant.RELEASE;
+import static com.udriving.drivingapi.entity.activity.ActivitiStatusConstant.*;
 
 /**
  * 活动相关接口
@@ -119,7 +120,7 @@ public class ActivityController {
     }
 
     /**
-     * 获取指定id的活动详情
+     * 修改活动
      *
      * @return 接口返回结构
      */
@@ -251,14 +252,59 @@ public class ActivityController {
     }
 
 
+    /**
+     * 获取指定id的活动详情
+     *
+     * @return 接口返回结构
+     */
+    @RequestMapping(value = "/getActivityListByCreateId", method = RequestMethod.GET)
+    public Response getActivityListByCreateId(@RequestParam("startId") int startId, @RequestParam("createUserId") int createUserId, @RequestParam("dataSize") byte dataSize) {
+        //接口返回
+        Response response = new Response();
+        List<Activity> activityList = null;
+        if (startId == 0) {
+            activityList = activityRepository.findActivityByCreateUserId(createUserId, dataSize);
+        } else {
+            activityList = activityRepository.findActivityByCreateUserId(startId, createUserId, dataSize);
+        }
+        if (activityList == null) {
+            response.setCode(ACTIVITY_NOT_FIND);
+            return response;
+        }
+        response.setData(new ActivityListResponse(activityList));
+        return response;
+    }
+
+    /**
+     * 获取指定id的活动详情
+     *
+     * @return 接口返回结构
+     */
+    @RequestMapping(value = "/getActivityListByNotApproval", method = RequestMethod.GET)
+    public Response getActivityListByNotApproval(@RequestParam("startId") int startId, @RequestParam("dataSize") byte dataSize) {
+        //接口返回
+        Response response = new Response();
+        List<Activity> activityList = null;
+        if (startId == 0) {
+            activityList = activityRepository.findLessStatusActivityList(RELEASE, dataSize);
+        } else {
+            activityList = activityRepository.findLessStatusActivityList(startId, RELEASE, dataSize);
+        }
+        if (activityList == null) {
+            response.setCode(ACTIVITY_NOT_FIND);
+            return response;
+        }
+        response.setData(new ActivityListResponse(activityList));
+        return response;
+    }
 
     /**
      * 审批指定活动
      *
      * @return 操作结果
      */
-    @RequestMapping(value = "/approvalActivityById", method = RequestMethod.POST)
-    public Response approvalActivityById(int id) {
+    @RequestMapping(value = "/approvalActivityById", method = RequestMethod.GET)
+    public Response approvalActivityById(@RequestParam("id") int id) {
         //接口返回
         Response response = new Response();
         short operationCode = modifiActivityStatusById(id, RELEASE);
@@ -268,7 +314,70 @@ public class ActivityController {
         return response;
     }
 
+    /**
+     * 拒绝审批指定活动
+     *
+     * @return 操作结果
+     */
+    @RequestMapping(value = "/refuseApprovalActivityById", method = RequestMethod.POST)
+    public Response refuseApprovalActivityById(@RequestBody RefuseApprovalActivityRequestParameter refuseApprovalActivityRequestParameter) {
+        //接口返回
+        Response response = new Response();
+        Optional<Activity> operation = activityRepository.findById(refuseApprovalActivityRequestParameter.getId());
+        if (operation == null) {
+            response.setCode(ACTIVITY_NOT_FIND);
+            return response;
+        }
+        Activity activity = operation.get();
+        if (activity == null) {
+            response.setCode(ACTIVITY_NOT_FIND);
+            return response;
+        }
+        activity.setStatus(REFUSE);
+        activity.setApproveOpinion(refuseApprovalActivityRequestParameter.getApproveOpinion());
+        activity = activityRepository.save(activity);
+        if (activity == null) {
+            response.setCode(SAVE_FAIL);
+            return response;
+        }
+        response.setData(new MoidfyActivityResponse());
+        return response;
+    }
 
+
+    /**
+     * 报名指定活动
+     *
+     * @return 操作结果
+     */
+    @RequestMapping(value = "/applyActivityById", method = RequestMethod.GET)
+    public Response applyActivityById(@RequestParam("id") int id, @RequestParam("currentUserId") int currentUserId) {
+        //接口返回
+        Response response = new Response();
+        Optional<Activity> operation = activityRepository.findById(id);
+        if (operation == null) {
+            response.setCode(ACTIVITY_NOT_FIND);
+            return response;
+        }
+        Activity activity = operation.get();
+        if (activity == null) {
+            response.setCode(ACTIVITY_NOT_FIND);
+            return response;
+        }
+        List<String> memberIdList = activity.getMemberIdList();
+        if (memberIdList == null) {
+            memberIdList = new LinkedList<>();
+        }
+        memberIdList.add(String.valueOf(currentUserId));
+        activity.setMemberIdList(memberIdList);
+        activity = activityRepository.save(activity);
+        if (activity == null) {
+            response.setCode(SAVE_FAIL);
+            return response;
+        }
+        response.setData(new MoidfyActivityResponse());
+        return response;
+    }
     /**
      * 修改活动状态
      *
