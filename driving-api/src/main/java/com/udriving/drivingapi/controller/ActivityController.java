@@ -220,7 +220,7 @@ public class ActivityController {
      * @return 接口返回结构
      */
     @RequestMapping(value = "/moidfyActivity", method = RequestMethod.POST)
-    public Response getActivityDetailById(@RequestBody MoidfyActivityRequestParameter moidfyActivityForRequestParameter) {
+    public Response moidfyActivity(@RequestBody MoidfyActivityRequestParameter moidfyActivityForRequestParameter) {
         //接口返回
         Response response = new Response();
         Optional<Activity> optional = activityRepository.findById(moidfyActivityForRequestParameter.getId());
