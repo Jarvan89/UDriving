@@ -348,7 +348,7 @@ public class ActivityController {
 
 
     /**
-     * 获取指定id的活动详情
+     * 获取指定用户创建的活动
      *
      * @return 接口返回结构
      */
