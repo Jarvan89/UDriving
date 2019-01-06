@@ -371,7 +371,7 @@ public class ActivityController {
     }
 
     /**
-     * 获取指定id的活动详情
+     * 获取所有需要审核的活动
      *
      * @return 接口返回结构
      */
