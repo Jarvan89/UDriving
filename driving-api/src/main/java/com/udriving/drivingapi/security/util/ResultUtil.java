@@ -1,6 +1,7 @@
 package com.udriving.drivingapi.security.util;
 
 import com.udriving.drivingapi.security.exception.ErrorCodeEnum;
+import com.udriving.drivingapi.util.JacksonUtil;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,7 +30,9 @@ public class ResultUtil {
 
     public static void writeJavaScript(HttpServletResponse httpServletResponse, ErrorCodeEnum codeEnum,Object obj) {
         try {
-            httpServletResponse.getWriter().append(codeEnum.getMessage()).flush();
+
+
+            httpServletResponse.getWriter().append(JacksonUtil.toJSONString(obj)).flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -19,7 +19,7 @@ import java.util.*;
  * Coder : haiyang
  * Date:2018/12/16
  *
- * @remark: jwt工具类  提供校验toeken 、生成token、根据token获取用户等方法
+ * @remark: jwt工具类  提供校验token 、生成token、根据token获取用户等方法
  */
 @Component
 public class JwtTokenUtil implements Serializable {
@@ -71,7 +71,7 @@ public class JwtTokenUtil implements Serializable {
 //            SecurityProperties.User user = new SecurityProperties.User(username, "", account_enabled, account_non_expired, account_non_expired, account_non_locked, authorities);
 //            new SecurityProperties.User();
             //todo
-            jwtUserDetails = JWTUserDetailsFactory.create(null, userId, Instant.now());
+            jwtUserDetails = JWTUserDetailsFactory.create(null, Instant.now());
         } catch (Exception e) {
             jwtUserDetails = null;
         }

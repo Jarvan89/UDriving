@@ -1,27 +1,24 @@
 //package com.udriving.drivingapi.security.weichatlogin;
 //
 //import com.udriving.drivingapi.entity.dao.UDUser;
+//import com.udriving.drivingapi.entity.weichat.WeiChatResponse;
 //import com.udriving.drivingapi.security.jwt.JWTUserDetails;
 //import com.udriving.drivingapi.util.HttpSynUtil;
-//
 //import com.udriving.drivingapi.util.JacksonUtil;
 //import lombok.extern.log4j.Log4j2;
-//import lombok.extern.slf4j.Slf4j;
 //import org.apache.commons.lang3.StringUtils;
 //import org.apache.http.client.utils.URIBuilder;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.security.authentication.AuthenticationManager;
 //import org.springframework.security.authentication.AuthenticationServiceException;
 //import org.springframework.security.authentication.BadCredentialsException;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.core.AuthenticationException;
-//import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+//import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.web.filter.OncePerRequestFilter;
 //
-//
+//import javax.servlet.FilterChain;
+//import javax.servlet.ServletException;
 //import javax.servlet.http.HttpServletRequest;
 //import javax.servlet.http.HttpServletResponse;
-//
 //import java.io.BufferedReader;
 //import java.io.IOException;
 //import java.io.InputStream;
@@ -30,6 +27,7 @@
 //import java.net.URISyntaxException;
 //import java.time.Instant;
 //import java.util.ArrayList;
+//import java.util.List;
 //
 ///**
 // * Created by IntelliJ IDEA
@@ -38,7 +36,7 @@
 // * Date:2018/12/20
 // */
 //@Log4j2
-//public class WeiChatAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+//public class WeiChatAuthenticationFilter_new extends OncePerRequestFilter {
 //    @Value("${weichat.mini.api.host}")
 //    private String weichatHost;
 //    @Value("${weichat.mini.appId}")
@@ -46,32 +44,20 @@
 //    @Value("${weichat.mini.secret}")
 //    private String weiChatSecret;
 //    private boolean postOnly = true;
-//    @Autowired
-//    private WeiChatUserService weiChatUserService;
-//    AuthenticationManager authenticationManager;
-//
-//    public WeiChatAuthenticationFilter(AuthenticationManager authenticationManager, WeiChatAuSuccessHandler successHandler, WeiChatFailHandler failureHandler) {
-//        this.setFilterProcessesUrl("/auth/v1/api/login");//这句代码很重要，设置登陆的url 要和 WebSecurityConfig 配置类中的.loginProcessingUrl("/auth/v1/api/login/entry") 一致，如果不配置则无法执行 重写的attemptAuthentication 方法里面而是执行了父类UsernamePasswordAuthenticationFilter的attemptAuthentication（）
-//        this.authenticationManager = authenticationManager;
-//        this.setAuthenticationManager(authenticationManager);   // AuthenticationManager 是必须的
-//        this.setAuthenticationSuccessHandler(successHandler);  //设置自定义登陆成功后的业务处理
-//        this.setAuthenticationFailureHandler(failureHandler); //设置自定义登陆失败后的业务处理
-//    }
 //
 //
 //    @Override
-//    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-//        if (postOnly && !request.getMethod().equals("POST")) {
+//    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+//        if (postOnly && !httpServletRequest.getMethod().equals("POST")) {
 //            throw new AuthenticationServiceException(
-//                    "Authentication method not supported: " + request.getMethod());
+//                    "Authentication method not supported: " + httpServletRequest.getMethod());
 //        }
-//
 //
 //        //读取 json 数据
 //        StringBuilder stringBuilder = new StringBuilder();
 //        BufferedReader bufferedReader = null;
 //        try {
-//            InputStream inputStream = request.getInputStream();
+//            InputStream inputStream = httpServletRequest.getInputStream();
 //            if (inputStream != null) {
 //                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 //                char[] charBuffer = new char[128];
@@ -94,7 +80,6 @@
 //            }
 //        }
 //
-//
 //        String body = stringBuilder.toString();
 //
 //
@@ -113,7 +98,7 @@
 //            //通过 OpenId 获取用户数据 {"session_key":"M1NoxN0MIRHrJzmtVGYV5w==","openid":"osfk65NOeuYDT3EU7nn7dmK0Xij8"}
 //            //todo
 //
-//            log.info("wei chat response = {}",weiChatResponse);
+//            log.info("wei chat response = {}", weiChatResponse);
 //
 //            WeiChatResponse weChatBean = null;
 //            try {
@@ -124,29 +109,33 @@
 //            }
 //
 //
-//            if(StringUtils.isEmpty(weChatBean.getOpenid())){
-//                throw new BadCredentialsException("Request error id={}"+weChatBean.getErrcode()+"\t msg:{}"+weChatBean.getErrmsg());
+//            if (StringUtils.isEmpty(weChatBean.getOpenid())) {
+//                throw new BadCredentialsException("Request error id={}" + weChatBean.getErrcode() + "\t msg:{}" + weChatBean.getErrmsg());
 //            }
 //            String openId = JacksonUtil.getMapper().readTree(weiChatResponse).get("openid").textValue();
 //            log.info("微信登陆：" + openId);
-//            //用户用户信息和用户角色
-//            UDUser userInfo = this.weiChatUserService.findUserByOpenId(openId);
-//            if (userInfo.getUserId() == null) {
-//                //后台抛出的异常是：org.springframework.security.authentication.BadCredentialsException: Bad credentials  坏的凭证 如果要抛出UsernameNotFoundException 用户找不到异常则需要自定义重新它的异常
-//                log.info("登录用户：" + openId + " 不存在，新创建 Useer 与 openId 绑定.");
-//                userInfo = new UDUser();
-//                userInfo.setPassword("1234");
-//                userInfo.setId(12);
-//                userInfo.setDistinction("12");
-//                userInfo.setNickname("haha");
-//                userInfo.setStatus(1);
-////                throw new UsernameNotFoundException("登录用户：" + openId + " 不存在");
-//            }
+////            //用户用户信息和用户角色
+////            UDUser userInfo = this.weiChatUserService.findUserByOpenId(openId);
+////            if (userInfo.getUserId() == null) {
+////                //后台抛出的异常是：org.springframework.security.authentication.BadCredentialsException: Bad credentials  坏的凭证 如果要抛出UsernameNotFoundException 用户找不到异常则需要自定义重新它的异常
+////                log.info("登录用户：" + openId + " 不存在，新创建 Useer 与 openId 绑定.");
+////                userInfo = new UDUser();
+////                userInfo.setPassword("1234");
+////                userInfo.setId(12);
+////                userInfo.setDistinction("12");
+////                userInfo.setNickname("haha");
+////                userInfo.setStatus(1);
+//////                throw new UsernameNotFoundException("登录用户：" + openId + " 不存在");
+////            }
 //            //使用JWT 代码
 ////            JWTUserDetails userDetail = DozerBeanMapperUtil.getObject(userInfo, JWTUserDetails.class);
-//            JWTUserDetails userDetail = new JWTUserDetails(1l, "userName", "password", new ArrayList(), Instant.now());
-//            authRequest = new WeiChatAuthenticationToken(userDetail, weiChatCode);
-////            authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
+//            List list = new ArrayList<String>();
+//            ((ArrayList) list).add("ADMIN");
+//            JWTUserDetails userDetail = new JWTUserDetails(1l, "userName", "password", list, Instant.now());
+////            authRequest = new WeiChatAuthenticationToken(userDetail, weiChatCode);
+//////            authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
+////
+////            SecurityContextHolder.getContext().setAuthentication(authRequest);
 //
 //        } catch (URISyntaxException e) {
 //            e.printStackTrace();
@@ -154,6 +143,6 @@
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-//        return authRequest;
+//        filterChain.doFilter(httpServletRequest, httpServletResponse);
 //    }
 //}

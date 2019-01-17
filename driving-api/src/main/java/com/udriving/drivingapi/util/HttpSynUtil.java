@@ -43,7 +43,7 @@ import org.apache.http.util.EntityUtils;
  * Coder : haiyang
  * Date:2018/12/22
  */
-public class HttpClientUtil {
+public class HttpSynUtil {
 
 
     /**
@@ -195,10 +195,11 @@ public class HttpClientUtil {
         }
     }
 
-    public static String get(String uri_str ) throws URISyntaxException {
+    public static String get(String uri_str) throws URISyntaxException {
         URI uri = new URIBuilder(uri_str).build();
         return get(uri);
     }
+
     /**
      * 发送 get请求
      */
@@ -217,11 +218,12 @@ public class HttpClientUtil {
                 // 打印响应状态
                 System.out.println(response.getStatusLine());
                 if (entity != null) {
+                    String body = EntityUtils.toString(entity);
                     // 打印响应内容长度
                     System.out.println("Response content length: " + entity.getContentLength());
                     // 打印响应内容
-                    System.out.println("Response content: " + EntityUtils.toString(entity));
-                    return EntityUtils.toString(entity);
+                    System.out.println("Response content: " + body);
+                    return body;
                 }
                 System.out.println("------------------------------------");
             } finally {

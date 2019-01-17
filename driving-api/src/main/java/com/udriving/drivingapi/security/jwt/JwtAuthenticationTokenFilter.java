@@ -37,7 +37,7 @@ import java.util.Date;
  *
  */
 @Slf4j
-@Component
+//@Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
 
@@ -73,10 +73,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         //过滤掉不需要token验证的url
-        if(authenticationRequestMatcher != null && !authenticationRequestMatcher.matches(httpServletRequest)){
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
-            return;
-        }
+//        if(authenticationRequestMatcher != null && !authenticationRequestMatcher.matches(httpServletRequest)){
+//            filterChain.doFilter(httpServletRequest, httpServletResponse);
+//            return;
+//        }
         String authHeader = httpServletRequest.getHeader(this.tokenHeader);
         if (authHeader != null && authHeader.startsWith(tokenHead)) {
             final String authToken = authHeader.substring(tokenHead.length()); // The part after "Bearer "

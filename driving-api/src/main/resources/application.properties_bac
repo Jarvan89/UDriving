@@ -5,19 +5,23 @@ spring.datasource.username=root
 spring.datasource.password=root1234
 server.port=8081
 spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true# JWT 配置
-jwt.secret:mySecret
-# 存放Token的Header Key
-jwt.header:Authorization
-# 密匙key
+spring.jpa.show-sql=true
 
-# 过期时间   单位秒 7天后过期  604800
+weichat.mini.appId = wx7989adf212f693c5
+weichat.mini.secret = 3b88e399823b29ba453a81ff1f074225
+
+produces="text/plain;charset=UTF-8"
+spring.http.encoding.force=true
+spring.http.encoding.charset=UTF-8
+spring.http.encoding.enabled=true
+server.tomcat.uri-encoding=UTF-8
+
+weichat.mini.api.host = https://api.weixin.qq.com/sns/jscode2session
+jwt.secret:mySecret
+jwt.header:Authorization
 jwt.expiration:3600
-# 自定义token 前缀字符
 jwt.tokenHead:Bearer-
-# 超时时间   单位秒
 jwt.access_token:3600
-# 刷新token时间   单位秒
 jwt.refresh_token:3600
 
 jwt.route.authentication.path:login/entry

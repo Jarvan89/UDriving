@@ -1,27 +1,28 @@
 package com.udriving.drivingapi.controller;
 
-import com.udriving.drivingapi.entity.WxSession;
+import com.udriving.drivingapi.entity.dao.UDUser;
+import com.udriving.drivingapi.entity.dao.UDUserRepository;
+import com.udriving.drivingapi.entity.weichat.WeiChatGetToken;
+import com.udriving.drivingapi.entity.weichat.WeiChatResponse;
+import com.udriving.drivingapi.security.jwt.JWTUserDetails;
+import com.udriving.drivingapi.security.jwt.JWTUserDetailsFactory;
 import com.udriving.drivingapi.security.jwt.JwtTokenUtil;
-import com.udriving.drivingapi.util.HttpAsyncUtil;
+import com.udriving.drivingapi.util.HttpSynUtil;
 import com.udriving.drivingapi.util.JacksonUtil;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA
@@ -42,11 +43,16 @@ public class Reg {
     private String weichatAppId;
     @Value("${weichat.mini.secret}")
     private String weiChatSecret;
+
     @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private UDUserRepository udUserRepository;
+    @Autowired
+    JwtTokenUtil util;
+
     /**
      * 注册接口
      * 根据手机号处理，暂时不处理
+     *
      * @param name
      */
     @RequestMapping(value = "/api/user/reg", method = RequestMethod.GET)
@@ -56,50 +62,46 @@ public class Reg {
     }
 
 
-    @RequestMapping(value = "/api/user/getToken", method = RequestMethod.GET)
-    public void getToken(@RequestParam("weiChatCode") String code,  HttpServletResponse response) {
+    @RequestMapping(value = "/api/user/weichat/getToken", method = RequestMethod.GET)
+    public String getToken(@RequestBody WeiChatGetToken weiChatGetToken) {
         //如果 weiChat 不为空，则先去
-        if (StringUtils.isNoneEmpty(code)) {
+        if (StringUtils.isNoneEmpty(weiChatGetToken.getCode())) {
             try {
-                URI uri = new URIBuilder(weichatHost).addParameter("appid", weichatAppId).addParameter("secret", weiChatSecret).addParameter("js_code", code).addParameter("grant_type", "authorization_code").build();
-                final HttpGet httpGet = new HttpGet(uri);
-                HttpAsyncUtil.getInstance().sendHttpGet(httpGet, new FutureCallback<HttpResponse>() {
-                    @Override
-                    public void completed(HttpResponse rp) {
+                URI uri = new URIBuilder(weichatHost).addParameter("appid", weichatAppId).addParameter("secret", weiChatSecret).addParameter("js_code", weiChatGetToken.getCode()).addParameter("grant_type", "authorization_code").build();
+                String weiChatResponse = HttpSynUtil.get(uri);
+                WeiChatResponse respons = JacksonUtil.json2Bean(weiChatResponse, WeiChatResponse.class);
+                if (StringUtils.isEmpty(respons.getOpenid())) {
+                    throw new BadCredentialsException("Request error id={}" + respons.getErrcode() + "\t msg:{}" + respons.getErrmsg());
+                }
+                UDUser userInfo = udUserRepository.findUserByOpenId(respons.getOpenid());
+                //获取 UserInfo 以后暂时不需要验证密码
+                String userId = java.util.UUID.randomUUID().toString();
+                if (userInfo.getUserId() == null) {
+                    log.info("微信用户注册：" + respons.getOpenid() + " 不存在，新创建 Useer 与 openId 绑定.");
+                    userInfo = new UDUser();
+                    userInfo.setPassword("");
+                    userInfo.setDistinction("weichat reg");
+                    userInfo.setNickname(weiChatGetToken.getCatName());
+                    userInfo.setStatus(1);
+                    userInfo.setOpenId(respons.getOpenid());
+                    userInfo.setUserId(userId);
+                    List role = new ArrayList<String>();
+                    role.add("USER");
+                    role.add("ADMIN");
+                    userInfo.setRole(role);
+                    udUserRepository.save(userInfo);
+                }
+                //生成 Token
+                JWTUserDetails details = JWTUserDetailsFactory.create(userInfo, Instant.now());
 
-                        try {
-                            String bd = EntityUtils.toString(rp.getEntity(), "UTF-8");
-                            WxSession ws = JacksonUtil.json2Bean(bd, WxSession.class);
-                            //拿到微信信息以后生成 User 入库。
-                            //入库成功返回 token
-//                            JWTUserDetails
-//                            jwtTokenUtil.generateAccessToken(user);
-                            response.getWriter().write(ws.toString());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                return util.generateAccessToken(details);
 
-                    @Override
-                    public void failed(Exception e) {
-                        //失败返回
-                        try {
-                            response.getWriter().write(e.toString());
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void cancelled() {
-                        log.info("cancelled");
-                    }
-                });
             } catch (URISyntaxException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
-
+        return "";
     }
 }

@@ -19,7 +19,7 @@ import java.util.Collection;
  */
 public class JWTUserDetails implements UserDetails {
 
-    private Long userId;         //用户ID
+    private long userId;         //用户ID
     private String password;       //用户密码
     private final String username; //用户名
     private final Collection<? extends GrantedAuthority> authorities;  //用户角色权限

@@ -2,6 +2,8 @@ package com.udriving.drivingapi.security.jwt;
 
 import com.udriving.drivingapi.security.exception.ErrorCodeEnum;
 import com.udriving.drivingapi.security.util.ResultUtil;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -20,8 +22,8 @@ import java.io.IOException;
  * @remark:   jwt 认证处理类
  *
  */
-@Slf4j
 
+@Log4j2
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
@@ -29,7 +31,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         StringBuffer msg = new StringBuffer("请求访问: ");
         msg.append(httpServletRequest.getRequestURI()).append(" 接口， 经jwt 认证失败，无法访问系统资源.");
         log.info(msg.toString());
-        log.info(e.toString());
         // 用户登录时身份认证未通过
         if(e instanceof BadCredentialsException) {
             log.info("用户登录时身份认证失败.");

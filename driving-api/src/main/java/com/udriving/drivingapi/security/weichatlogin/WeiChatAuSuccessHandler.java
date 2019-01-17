@@ -59,8 +59,8 @@ public class WeiChatAuSuccessHandler implements AuthenticationSuccessHandler {
         log.info(msg.toString());
         //使用jwt生成token 用于权限效验
         String token = jwtTokenUtil.generateAccessToken(userDetails);
-        UserDetail user = userDetails.getUserInfo();
-        user.setToken(token);
+//        UserDetail user = userDetails.getUserInfo();
+//        user.setToken(token);
         //将登录人信息放在redis中
 //        this.saveTokenToRedis(user.getAccountId(),token,JSON.toJSONString(user));
         String access_token = tokenHead + token;
@@ -68,13 +68,12 @@ public class WeiChatAuSuccessHandler implements AuthenticationSuccessHandler {
         Map<String, String> map = new HashMap<>();
         map.put("access_token", access_token);
         map.put("refresh_token", refresh_token);
-        map.put("userId", user.getUserId());
-        map.put("userName", user.getUserName());
-        map.put("email", user.getUserEmail());
-        map.put("msage", msg.toString());
+//        map.put("userId", user.getUserId());
+//        map.put("userName", user.getUserName());
+//        map.put("email", user.getUserEmail());
+        map.put("msg", msg.toString());
 //        RestfulVo restfulVo = ResultUtil.resultInfo(ErrorCodeEnum.SUCCESS,map);
         ResultUtil.writeJavaScript(response,ErrorCodeEnum.SUCCESS,map);
-
 
         System.out.println("Success");
     }
