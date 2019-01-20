@@ -1,7 +1,7 @@
 //package com.udriving.drivingapi.security.NormalLogin;
 //
 //import com.udriving.drivingapi.entity.dao.UDUser;
-//import com.udriving.drivingapi.entity.dao.UDrole;
+//import com.udriving.drivingapi.entity.dao.UDRole;
 //import com.udriving.drivingapi.security.jwt.JWTUserDetailsFactory;
 //import com.udriving.drivingapi.security.util.DozerBeanMapperUtil;
 //import lombok.extern.slf4j.Slf4j;
@@ -56,7 +56,7 @@
 ////        //获取用户信息
 //        UDUser userInfo = userRole.getUserInfo();
 ////        //获取用户拥有的角色 权限检查 todo
-//        List<UDrole> roleList = userRole.getRoles();
+//        List<UDRole> roleList = userRole.getRoles();
 //
 //        Set<GrantedAuthority> grantedAuths = new HashSet<GrantedAuthority>();
 //        grantedAuths.add(new SimpleGrantedAuthority("123"));

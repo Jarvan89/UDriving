@@ -1,7 +1,7 @@
 package com.udriving.drivingapi.security.NormalLogin;
 
 import com.udriving.drivingapi.entity.dao.UDUser;
-import com.udriving.drivingapi.entity.dao.UDrole;
+import com.udriving.drivingapi.entity.dao.UDRole;
 import lombok.Data;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 public class UserRoleVO {
     UDUser user;
-    List<UDrole> uDroles;
+    List<UDRole> UDRoles;
     public String  getUserId() {
         return user.getUserId();
     }
@@ -23,7 +23,7 @@ public class UserRoleVO {
         return  user;
     }
 
-    public List<UDrole> getRoles() {
-        return  uDroles;
+    public List<UDRole> getRoles() {
+        return UDRoles;
     }
 }

@@ -82,13 +82,9 @@ public class Reg {
                     userInfo.setPassword("");
                     userInfo.setDistinction("weichat reg");
                     userInfo.setNickname(weiChatGetToken.getCatName());
-                    userInfo.setStatus(1);
+                    userInfo.setEnabled(true);
                     userInfo.setOpenId(respons.getOpenid());
                     userInfo.setUserId(userId);
-                    List role = new ArrayList<String>();
-                    role.add("USER");
-                    role.add("ADMIN");
-                    userInfo.setRole(role);
                     udUserRepository.save(userInfo);
                 }
                 //生成 Token

@@ -1,13 +1,13 @@
 package com.udriving.drivingapi.security.jwt;
 
 import com.udriving.drivingapi.entity.dao.UDUser;
-import com.udriving.drivingapi.entity.dao.UDrole;
+import com.udriving.drivingapi.entity.dao.UDRole;
 import com.udriving.drivingapi.security.NormalLogin.UserDetail;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,16 +24,16 @@ public final class JWTUserDetailsFactory {
     }
 
     public static JWTUserDetails create(UDUser user, Instant date) {
-        return new JWTUserDetails(user.getId(), user.getNickname(), user.getPassword(), mapToGrantedAuthorities(user.getRole()), date);
+        return new JWTUserDetails(user.getId(), user.getNickname(), user.getPassword(), mapToGrantedAuthorities(user.getRoles()), date);
     }
 
     public static JWTUserDetails create(UDUser user, UserDetail userDetail) {
-        return new JWTUserDetails(userDetail, mapToGrantedAuthorities(user.getRole()));
+        return new JWTUserDetails(userDetail, mapToGrantedAuthorities(user.getRoles()));
     }
 
-    private static List<GrantedAuthority> mapToGrantedAuthorities(List<UDrole> authorities) {
+    private static List<GrantedAuthority> mapToGrantedAuthorities(Collection<UDRole> authorities) {
 
-        return authorities.stream().map(uDrole -> new SimpleGrantedAuthority(uDrole.getRole())).collect(Collectors.toList());
+        return authorities.stream().map(UDRole -> new SimpleGrantedAuthority(UDRole.getName())).collect(Collectors.toList());
 
     }
 
