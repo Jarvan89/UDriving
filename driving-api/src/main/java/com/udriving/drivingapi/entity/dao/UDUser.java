@@ -5,6 +5,7 @@ import org.hibernate.annotations.ColumnTransformer;
 
 import javax.persistence.*;
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 

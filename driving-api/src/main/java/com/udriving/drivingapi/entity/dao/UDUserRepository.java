@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface UDUserRepository extends JpaRepository<UDUser, Long> {
 
-    @Query(value = "select * from UDUser WHERE openId = :openId ORDER BY id DESC", nativeQuery = true)
-    UDUser findUserByOpenId(@Param("openId") String status);
+    @Query(value = "select * from ud_user WHERE open_id = :openId ORDER BY id DESC", nativeQuery = true)
+    UDUser findUserByOpenId(@Param("openId") String openId);
 
 }

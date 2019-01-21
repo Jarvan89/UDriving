@@ -1,6 +1,7 @@
 package com.udriving.drivingapi.entity.dao;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -16,13 +17,8 @@ import java.util.Collection;
 @Entity
 @Table(name = "UD_Role")
 @RequiredArgsConstructor
+@NoArgsConstructor
 public class UDRole {
-
-
-
-    public  UDRole(){
-
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;

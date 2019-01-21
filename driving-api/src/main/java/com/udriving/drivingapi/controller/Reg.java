@@ -1,12 +1,12 @@
 package com.udriving.drivingapi.controller;
 
 import com.udriving.drivingapi.entity.dao.UDUser;
-import com.udriving.drivingapi.entity.dao.UDUserRepository;
 import com.udriving.drivingapi.entity.weichat.WeiChatGetToken;
 import com.udriving.drivingapi.entity.weichat.WeiChatResponse;
 import com.udriving.drivingapi.security.jwt.JWTUserDetails;
 import com.udriving.drivingapi.security.jwt.JWTUserDetailsFactory;
 import com.udriving.drivingapi.security.jwt.JwtTokenUtil;
+import com.udriving.drivingapi.service.UDUserService;
 import com.udriving.drivingapi.util.HttpSynUtil;
 import com.udriving.drivingapi.util.JacksonUtil;
 import lombok.extern.log4j.Log4j2;
@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA
@@ -45,7 +43,7 @@ public class Reg {
     private String weiChatSecret;
 
     @Autowired
-    private UDUserRepository udUserRepository;
+    UDUserService udUserService;
     @Autowired
     JwtTokenUtil util;
 
@@ -62,7 +60,7 @@ public class Reg {
     }
 
 
-    @RequestMapping(value = "/api/user/weichat/getToken", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/user/weichat/getToken", method = RequestMethod.POST)
     public String getToken(@RequestBody WeiChatGetToken weiChatGetToken) {
         //如果 weiChat 不为空，则先去
         if (StringUtils.isNoneEmpty(weiChatGetToken.getCode())) {
@@ -73,10 +71,10 @@ public class Reg {
                 if (StringUtils.isEmpty(respons.getOpenid())) {
                     throw new BadCredentialsException("Request error id={}" + respons.getErrcode() + "\t msg:{}" + respons.getErrmsg());
                 }
-                UDUser userInfo = udUserRepository.findUserByOpenId(respons.getOpenid());
+                UDUser userInfo = udUserService.findUserByOpenId(respons.getOpenid());
                 //获取 UserInfo 以后暂时不需要验证密码
                 String userId = java.util.UUID.randomUUID().toString();
-                if (userInfo.getUserId() == null) {
+                if (userInfo == null) {
                     log.info("微信用户注册：" + respons.getOpenid() + " 不存在，新创建 Useer 与 openId 绑定.");
                     userInfo = new UDUser();
                     userInfo.setPassword("");
@@ -85,11 +83,10 @@ public class Reg {
                     userInfo.setEnabled(true);
                     userInfo.setOpenId(respons.getOpenid());
                     userInfo.setUserId(userId);
-                    udUserRepository.save(userInfo);
+                    udUserService.regUser(userInfo);
                 }
                 //生成 Token
                 JWTUserDetails details = JWTUserDetailsFactory.create(userInfo, Instant.now());
-
                 return util.generateAccessToken(details);
 
             } catch (URISyntaxException e) {
