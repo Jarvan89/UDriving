@@ -7,8 +7,8 @@ import lombok.Data;
  * @Date 2019-01-07 10:38
  */
 @Data
-public class WeiChatGetToken {
+public class WeiRegInfo {
 
     String code;
-    String catName;
+    String chatName;
 }

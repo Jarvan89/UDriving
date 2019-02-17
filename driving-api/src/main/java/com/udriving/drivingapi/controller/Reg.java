@@ -1,7 +1,7 @@
 package com.udriving.drivingapi.controller;
 
 import com.udriving.drivingapi.entity.dao.UDUser;
-import com.udriving.drivingapi.entity.weichat.WeiChatGetToken;
+import com.udriving.drivingapi.entity.weichat.WeiRegInfo;
 import com.udriving.drivingapi.entity.weichat.WeiChatResponse;
 import com.udriving.drivingapi.security.jwt.JWTUserDetails;
 import com.udriving.drivingapi.security.jwt.JWTUserDetailsFactory;
@@ -9,6 +9,9 @@ import com.udriving.drivingapi.security.jwt.JwtTokenUtil;
 import com.udriving.drivingapi.service.UDUserService;
 import com.udriving.drivingapi.util.HttpSynUtil;
 import com.udriving.drivingapi.util.JacksonUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -32,6 +35,7 @@ import java.time.Instant;
  */
 @Log4j2
 @RestController
+@Api(value = "用户注册逻辑")
 public class Reg {
 
     @Value("${weichat.mini.api.host}")
@@ -53,6 +57,7 @@ public class Reg {
      *
      * @param name
      */
+
     @RequestMapping(value = "/api/user/reg", method = RequestMethod.GET)
     public void reg(@RequestParam("phoneNum") String name) {
 
@@ -61,11 +66,13 @@ public class Reg {
 
 
     @RequestMapping(value = "/api/user/weichat/getToken", method = RequestMethod.POST)
-    public String getToken(@RequestBody WeiChatGetToken weiChatGetToken) {
+    @ApiOperation(value = "微信获取 token 方法",notes = "如果不存在则创建，如果存在返回token",httpMethod = "POST",response = String.class)
+    @ApiImplicitParam(name = "WeiRegInfo",value = "微信注册必须参数",required = true,dataType = "WeiRegInfo",paramType = "query")
+    public String getToken(@RequestBody WeiRegInfo weiRegInfo) {
         //如果 weiChat 不为空，则先去
-        if (StringUtils.isNoneEmpty(weiChatGetToken.getCode())) {
+        if (StringUtils.isNoneEmpty(weiRegInfo.getCode())) {
             try {
-                URI uri = new URIBuilder(weichatHost).addParameter("appid", weichatAppId).addParameter("secret", weiChatSecret).addParameter("js_code", weiChatGetToken.getCode()).addParameter("grant_type", "authorization_code").build();
+                URI uri = new URIBuilder(weichatHost).addParameter("appid", weichatAppId).addParameter("secret", weiChatSecret).addParameter("js_code", weiRegInfo.getCode()).addParameter("grant_type", "authorization_code").build();
                 String weiChatResponse = HttpSynUtil.get(uri);
                 WeiChatResponse respons = JacksonUtil.json2Bean(weiChatResponse, WeiChatResponse.class);
                 if (StringUtils.isEmpty(respons.getOpenid())) {
@@ -79,7 +86,7 @@ public class Reg {
                     userInfo = new UDUser();
                     userInfo.setPassword("");
                     userInfo.setDistinction("weichat reg");
-                    userInfo.setNickname(weiChatGetToken.getCatName());
+                    userInfo.setNickname(weiRegInfo.getChatName());
                     userInfo.setEnabled(true);
                     userInfo.setOpenId(respons.getOpenid());
                     userInfo.setUserId(userId);
