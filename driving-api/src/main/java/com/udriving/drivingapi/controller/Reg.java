@@ -3,6 +3,7 @@ package com.udriving.drivingapi.controller;
 import com.udriving.drivingapi.entity.dao.UDUser;
 import com.udriving.drivingapi.entity.weichat.WeiRegInfo;
 import com.udriving.drivingapi.entity.weichat.WeiChatResponse;
+import com.udriving.drivingapi.exception.UDBaseException;
 import com.udriving.drivingapi.security.jwt.JWTUserDetails;
 import com.udriving.drivingapi.security.jwt.JWTUserDetailsFactory;
 import com.udriving.drivingapi.security.jwt.JwtTokenUtil;
@@ -66,41 +67,36 @@ public class Reg {
 
 
     @RequestMapping(value = "/api/user/weichat/getToken", method = RequestMethod.POST)
-    @ApiOperation(value = "微信获取 token 方法",notes = "如果不存在则创建，如果存在返回token",httpMethod = "POST",response = String.class)
-    @ApiImplicitParam(name = "WeiRegInfo",value = "微信注册必须参数",required = true,dataType = "WeiRegInfo",paramType = "query")
-    public String getToken(@RequestBody WeiRegInfo weiRegInfo) {
-        //如果 weiChat 不为空，则先去
+    @ApiOperation(value = "微信获取 token 方法", notes = "如果不存在则创建，如果存在返回token", httpMethod = "POST", response = String.class)
+    @ApiImplicitParam(name = "WeiRegInfo", value = "微信注册必须参数", required = true, dataType = "WeiRegInfo", paramType = "query")
+    public String getToken(@RequestBody WeiRegInfo weiRegInfo) throws URISyntaxException, IOException, UDBaseException {
         if (StringUtils.isNoneEmpty(weiRegInfo.getCode())) {
-            try {
-                URI uri = new URIBuilder(weichatHost).addParameter("appid", weichatAppId).addParameter("secret", weiChatSecret).addParameter("js_code", weiRegInfo.getCode()).addParameter("grant_type", "authorization_code").build();
-                String weiChatResponse = HttpSynUtil.get(uri);
-                WeiChatResponse respons = JacksonUtil.json2Bean(weiChatResponse, WeiChatResponse.class);
-                if (StringUtils.isEmpty(respons.getOpenid())) {
-                    throw new BadCredentialsException("Request error id={}" + respons.getErrcode() + "\t msg:{}" + respons.getErrmsg());
-                }
-                UDUser userInfo = udUserService.findUserByOpenId(respons.getOpenid());
-                //获取 UserInfo 以后暂时不需要验证密码
-                String userId = java.util.UUID.randomUUID().toString();
-                if (userInfo == null) {
-                    log.info("微信用户注册：" + respons.getOpenid() + " 不存在，新创建 Useer 与 openId 绑定.");
-                    userInfo = new UDUser();
-                    userInfo.setPassword("");
-                    userInfo.setDistinction("weichat reg");
-                    userInfo.setNickname(weiRegInfo.getChatName());
-                    userInfo.setEnabled(true);
-                    userInfo.setOpenId(respons.getOpenid());
-                    userInfo.setUserId(userId);
-                    udUserService.regUser(userInfo);
-                }
-                //生成 Token
-                JWTUserDetails details = JWTUserDetailsFactory.create(userInfo, Instant.now());
-                return util.generateAccessToken(details);
 
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            URI uri = new URIBuilder(weichatHost).addParameter("appid", weichatAppId).addParameter("secret", weiChatSecret).addParameter("js_code", weiRegInfo.getCode()).addParameter("grant_type", "authorization_code").build();
+            String weiChatResponse = HttpSynUtil.get(uri);
+            WeiChatResponse respons = JacksonUtil.json2Bean(weiChatResponse, WeiChatResponse.class);
+            if (StringUtils.isEmpty(respons.getOpenid())) {
+                throw new UDBaseException(respons.getErrcode(), respons.getErrmsg());
             }
+            UDUser userInfo = udUserService.findUserByOpenId(respons.getOpenid());
+            //获取 UserInfo 以后暂时不需要验证密码
+            String userId = java.util.UUID.randomUUID().toString();
+            if (userInfo == null) {
+                log.info("微信用户注册：" + respons.getOpenid() + " 不存在，新创建 Useer 与 openId 绑定.");
+                userInfo = new UDUser();
+                userInfo.setPassword("");
+                userInfo.setDistinction("weichat reg");
+                userInfo.setNickname(weiRegInfo.getChatName());
+                userInfo.setEnabled(true);
+                userInfo.setOpenId(respons.getOpenid());
+                userInfo.setUserId(userId);
+                udUserService.regUser(userInfo);
+            }
+            //生成 Token
+            JWTUserDetails details = JWTUserDetailsFactory.create(userInfo, Instant.now());
+            return util.generateAccessToken(details);
+
+
         }
         return "";
     }
