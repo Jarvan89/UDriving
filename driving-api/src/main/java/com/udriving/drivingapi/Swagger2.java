@@ -36,9 +36,10 @@ public class Swagger2 {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 //页面标题
-                .title("Spring Boot 测试使用 Swagger2 构建RESTful API")
+                .title("UDriving")
+                .description("UDriving 所有 API 接口文档")
                 //创建人
-                .contact(new Contact("MarryFeng", "http://www.baidu.com", ""))
+                .contact(new Contact("UDriving", "http://www.baidu.com", ""))
                 //版本号
                 .version("1.0")
                 //描述

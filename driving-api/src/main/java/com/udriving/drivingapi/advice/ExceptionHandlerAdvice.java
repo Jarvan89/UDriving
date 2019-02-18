@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,8 +39,20 @@ public class ExceptionHandlerAdvice implements ResponseBodyAdvice {
         if (log.isDebugEnabled()) {
             e.printStackTrace();
         }
-        return null;
+
+        log.info("{}\r{}",e.getClass().getName(),e.fillInStackTrace());
+        return e.getMessage();
+
+
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Object handleArgumentException(MethodArgumentNotValidException e){
+
+        log.info("{}\t{}\t{}",e.getMessage(),e.getParameter(),e.getBindingResult());
+        return e.getMessage();
+    }
+
 
     @ExceptionHandler(UDBaseException.class)
     public Object handleBaseException(UDBaseException e, HttpServletRequest request) {

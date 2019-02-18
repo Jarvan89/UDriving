@@ -8,6 +8,7 @@ import com.udriving.drivingapi.controller.response.*;
 import com.udriving.drivingapi.entity.activity.Activity;
 import com.udriving.drivingapi.entity.activity.ActivityForDetail;
 import com.udriving.drivingapi.entity.activity.ActivityRepository;
+import io.swagger.annotations.Api;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import static com.udriving.drivingapi.entity.activity.ActivitiStatusConstant.*;
  */
 @RestController
 @Log4j2
+@Api(tags="活动管理",description="ActivityController")
 public class ActivityController {
     @Autowired
     private ActivityRepository activityRepository;

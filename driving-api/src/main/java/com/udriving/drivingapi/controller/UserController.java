@@ -1,33 +1,98 @@
 package com.udriving.drivingapi.controller;
 
-/**
- * @Coder shihaiyang
- * @Date 2019-01-01 20:56
- */
-
+import com.udriving.drivingapi.entity.dao.UDUser;
+import com.udriving.drivingapi.entity.weichat.WeiRegInfo;
+import com.udriving.drivingapi.entity.weichat.WeiChatResponse;
+import com.udriving.drivingapi.exception.UDBaseException;
+import com.udriving.drivingapi.security.jwt.JWTUserDetails;
+import com.udriving.drivingapi.security.jwt.JWTUserDetailsFactory;
+import com.udriving.drivingapi.security.jwt.JwtTokenUtil;
+import com.udriving.drivingapi.service.UDUserService;
+import com.udriving.drivingapi.util.HttpSynUtil;
+import com.udriving.drivingapi.util.JacksonUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.Instant;
 
 /**
- * 在 @PreAuthorize 中我们可以利用内建的 SPEL 表达式：比如 'hasRole()' 来决定哪些用户有权访问。
- * 需注意的一点是 hasRole 表达式认为每个角色名字前都有一个前缀 'ROLE_'。所以这里的 'ADMIN' 其实在
- * 数据库中存储的是 'ROLE_ADMIN' 。这个 @PreAuthorize 可以修饰Controller也可修饰Controller中的方法。
- **/
+ * Created by IntelliJ IDEA
+ * Coder : haiyang
+ * Date:2018/12/18
+ * 用户注册接口：
+ * 1、API 注册，根据请求生成 UserId 并返回 Token
+ * 2、微信注册。根据 code 获取 OpenId 并生成 UserId 返回 Token
+ */
+@Log4j2
 @RestController
-@RequestMapping("/users")
-@PreAuthorize("hasRole('ADMIN')")
+@Api(tags = "用户管理", description = "UserController")
 public class UserController {
-//    @Autowired
-//    private UserRepository repository;
+    @Value("${weichat.mini.api.host}")
+    private String weichatHost;
+    @Value("${weichat.mini.appId}")
+    private String weichatAppId;
+    @Value("${weichat.mini.secret}")
+    private String weiChatSecret;
+    @Autowired
+    UDUserService udUserService;
+    @Autowired
+    JwtTokenUtil util;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String getUsers() {
-        return "success";
+    /**
+     * 注册接口
+     * 根据手机号处理，暂时不处理
+     *
+     * @param name
+     */
+
+    @RequestMapping(value = "/api/user/reg", method = RequestMethod.GET)
+    public void reg(@RequestParam("phoneNum") String name) {
+
+
     }
 
-    // 略去其它部分
-}
 
+    @RequestMapping(value = "/api/user/weichat/getToken", method = RequestMethod.POST)
+    @ApiOperation(value = "微信获取 token 方法", notes = "如果不存在则创建，如果存在返回token", httpMethod = "POST", response = String.class)
+    @ApiImplicitParam(name = "WeiRegInfo", value = "微信注册必须参数", required = true, dataType = "WeiRegInfo", paramType = "query")
+    public String getToken(@RequestBody@Valid WeiRegInfo weiRegInfo) throws URISyntaxException, IOException, UDBaseException {
+
+        URI uri = new URIBuilder(weichatHost).addParameter("appid", weichatAppId).addParameter("secret", weiChatSecret).addParameter("js_code", weiRegInfo.getCode()).addParameter("grant_type", "authorization_code").build();
+        String weiChatResponse = HttpSynUtil.get(uri);
+        WeiChatResponse respons = JacksonUtil.json2Bean(weiChatResponse, WeiChatResponse.class);
+        if (StringUtils.isEmpty(respons.getOpenid())) {
+            throw new UDBaseException(respons.getErrcode(), respons.getErrmsg());
+        }
+        UDUser userInfo = udUserService.findUserByOpenId(respons.getOpenid());
+        //获取 UserInfo 以后暂时不需要验证密码
+        String userId = java.util.UUID.randomUUID().toString();
+        if (userInfo == null) {
+            log.info("微信用户注册：" + respons.getOpenid() + " 不存在，新创建 Useer 与 openId 绑定.");
+            userInfo = new UDUser();
+            userInfo.setPassword("");
+            userInfo.setDistinction("weichat reg");
+            userInfo.setNickname(weiRegInfo.getChatName());
+            userInfo.setEnabled(true);
+            userInfo.setOpenId(respons.getOpenid());
+            userInfo.setUserId(userId);
+            udUserService.regUser(userInfo);
+        }
+        //生成 Token
+        JWTUserDetails details = JWTUserDetailsFactory.create(userInfo, Instant.now());
+        return util.generateAccessToken(details);
+    }
+
+
+}
