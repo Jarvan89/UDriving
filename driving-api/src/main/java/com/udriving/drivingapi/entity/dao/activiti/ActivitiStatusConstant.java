@@ -1,4 +1,4 @@
-package com.udriving.drivingapi.entity.activity;
+package com.udriving.drivingapi.entity.dao.activiti;
 
 /**
  * 活动状态常量

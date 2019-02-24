@@ -1,4 +1,4 @@
-package com.udriving.drivingapi.controller.request;
+package com.udriving.drivingapi.http.controller.request;
 
 import lombok.Data;
 
@@ -8,9 +8,9 @@ import lombok.Data;
 @Data
 public class UploadFlockQrCodeRequestParameter {
     /**
-     * 活动id
-     */
-    private Long acitivityId;
+ * 活动id
+ */
+private Long acitivityId;
 
     /**
      * 二维码文件的Base64编码字符串

@@ -1,4 +1,4 @@
-package com.udriving.drivingapi.entity.activity;
+package com.udriving.drivingapi.entity.dao.activiti;
 
 import lombok.Data;
 
@@ -31,7 +31,7 @@ public class BaseActivity {
      * 预估费用
      */
     @Column
-    protected float estimateCost;
+    protected long estimateCost;
 
     /**
      * 创建人用户名，该名仅针对本次活动有效

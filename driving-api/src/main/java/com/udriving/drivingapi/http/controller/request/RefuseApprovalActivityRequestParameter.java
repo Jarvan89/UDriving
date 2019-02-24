@@ -1,4 +1,4 @@
-package com.udriving.drivingapi.controller.request;
+package com.udriving.drivingapi.http.controller.request;
 
 import lombok.Getter;
 import lombok.Setter;

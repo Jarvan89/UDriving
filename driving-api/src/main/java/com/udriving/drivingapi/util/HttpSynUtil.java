@@ -80,7 +80,7 @@ public class HttpSynUtil {
                 System.out.println("----------------------------------------");
                 System.out.println(response.getStatusLine());
                 if (entity != null) {
-                    System.out.println("Response content length: " + entity.getContentLength());
+                    System.out.println("BaseResponse content length: " + entity.getContentLength());
                     System.out.println(EntityUtils.toString(entity));
                     EntityUtils.consume(entity);
                 }
@@ -130,7 +130,7 @@ public class HttpSynUtil {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
                     System.out.println("--------------------------------------");
-                    System.out.println("Response content: " + EntityUtils.toString(entity, "UTF-8"));
+                    System.out.println("BaseResponse content: " + EntityUtils.toString(entity, "UTF-8"));
                     System.out.println("--------------------------------------");
                 }
             } finally {
@@ -173,7 +173,7 @@ public class HttpSynUtil {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
                     System.out.println("--------------------------------------");
-                    System.out.println("Response content: " + EntityUtils.toString(entity, "UTF-8"));
+                    System.out.println("BaseResponse content: " + EntityUtils.toString(entity, "UTF-8"));
                     System.out.println("--------------------------------------");
                 }
             } finally {
@@ -220,9 +220,9 @@ public class HttpSynUtil {
                 if (entity != null) {
                     String body = EntityUtils.toString(entity);
                     // 打印响应内容长度
-                    System.out.println("Response content length: " + entity.getContentLength());
+                    System.out.println("BaseResponse content length: " + entity.getContentLength());
                     // 打印响应内容
-                    System.out.println("Response content: " + body);
+                    System.out.println("BaseResponse content: " + body);
                     return body;
                 }
                 System.out.println("------------------------------------");
@@ -268,7 +268,7 @@ public class HttpSynUtil {
                 System.out.println(response.getStatusLine());
                 HttpEntity resEntity = response.getEntity();
                 if (resEntity != null) {
-                    System.out.println("Response content length: " + resEntity.getContentLength());
+                    System.out.println("BaseResponse content length: " + resEntity.getContentLength());
                 }
                 EntityUtils.consume(resEntity);
             } finally {

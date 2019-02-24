@@ -1,4 +1,4 @@
-package com.udriving.drivingapi.controller;
+package com.udriving.drivingapi.http.controller;
 
 import com.udriving.drivingapi.entity.dao.UDUser;
 import com.udriving.drivingapi.entity.weichat.WeiRegInfo;
@@ -18,10 +18,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -60,15 +59,22 @@ public class UserController {
     @RequestMapping(value = "/api/user/reg", method = RequestMethod.GET)
     public void reg(@RequestParam("phoneNum") String name) {
 
-
     }
 
 
+    /**
+     * 微信获取 token 接口
+     *
+     * @param weiRegInfo
+     * @return
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws UDBaseException
+     */
     @RequestMapping(value = "/api/user/weichat/getToken", method = RequestMethod.POST)
     @ApiOperation(value = "微信获取 token 方法", notes = "如果不存在则创建，如果存在返回token", httpMethod = "POST", response = String.class)
     @ApiImplicitParam(name = "WeiRegInfo", value = "微信注册必须参数", required = true, dataType = "WeiRegInfo", paramType = "query")
-    public String getToken(@RequestBody@Valid WeiRegInfo weiRegInfo) throws URISyntaxException, IOException, UDBaseException {
-
+    public String getToken(@RequestBody @Validated WeiRegInfo weiRegInfo) throws URISyntaxException, IOException, UDBaseException {
         URI uri = new URIBuilder(weichatHost).addParameter("appid", weichatAppId).addParameter("secret", weiChatSecret).addParameter("js_code", weiRegInfo.getCode()).addParameter("grant_type", "authorization_code").build();
         String weiChatResponse = HttpSynUtil.get(uri);
         WeiChatResponse respons = JacksonUtil.json2Bean(weiChatResponse, WeiChatResponse.class);
@@ -93,6 +99,4 @@ public class UserController {
         JWTUserDetails details = JWTUserDetailsFactory.create(userInfo, Instant.now());
         return util.generateAccessToken(details);
     }
-
-
 }

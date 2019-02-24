@@ -1,4 +1,4 @@
-package com.udriving.drivingapi.entity.activity;
+package com.udriving.drivingapi.entity.dao.activiti;
 
 import lombok.Data;
 
@@ -48,32 +48,32 @@ public class ActivityForListPage extends BaseActivity {
      */
     private List<String> introducePicture;
 
-    public static final ActivityForListPage convert(Activity activity) {
-        if (activity == null) {
+    public static final ActivityForListPage convert(UDActivity UDActivity) {
+        if (UDActivity == null) {
             return null;
         }
         ActivityForListPage activityForListPage = new ActivityForListPage();
-        activityForListPage.setId(activity.getId());
-        activityForListPage.setTitle(activity.getTitle());
-        activityForListPage.setDistance(activity.getDistance());
-        activityForListPage.setEstimateCost(activity.getEstimateCost());
+        activityForListPage.setId(UDActivity.getId());
+        activityForListPage.setTitle(UDActivity.getTitle());
+        activityForListPage.setDistance(UDActivity.getDistance());
+        activityForListPage.setEstimateCost(UDActivity.getEstimateCost());
         //地址信息，此处取的是目的地地址信息
-        AddressInfo addressInfo = activity.getDestinationAddressInfo();
+        AddressInfo addressInfo = UDActivity.getDestinationAddressInfo();
         if (addressInfo != null) {
             activityForListPage.setDestinationCity(addressInfo.getCity());
             activityForListPage.setDestinationProvince(addressInfo.getProvince());
         }
         //此处取的是出发地地址信息
-        addressInfo = activity.getDepartAddressInfo();
+        addressInfo = UDActivity.getDepartAddressInfo();
         if (addressInfo != null) {
             activityForListPage.setDepartCity(addressInfo.getCity());
         }
-        activityForListPage.setCreateUserName(activity.getCreateUserName());
-        activityForListPage.setDays(countDays(activity.getBackTimestamp(), activity.getDepartTimestamp()));
-        activityForListPage.setLookOverNumber(activity.getLookOverNumber());
-        activityForListPage.setIntroducePicture(activity.getIntroducePicture());
-        activityForListPage.setDepartTime(formatYYYYMMDDHHMMSS(activity.getDepartTimestamp()));
-        activityForListPage.setBackTime(formatYYYYMMDDHHMMSS(activity.getBackTimestamp()));
+        activityForListPage.setCreateUserName(UDActivity.getCreateUserName());
+        activityForListPage.setDays(countDays(UDActivity.getBackTimestamp(), UDActivity.getDepartTimestamp()));
+        activityForListPage.setLookOverNumber(UDActivity.getLookOverNumber());
+        activityForListPage.setIntroducePicture(UDActivity.getIntroducePicture());
+        activityForListPage.setDepartTime(formatYYYYMMDDHHMMSS(UDActivity.getDepartTimestamp()));
+        activityForListPage.setBackTime(formatYYYYMMDDHHMMSS(UDActivity.getBackTimestamp()));
         return activityForListPage;
     }
 }

@@ -1,4 +1,4 @@
-package com.udriving.drivingapi.entity.activity;
+package com.udriving.drivingapi.entity.dao.activiti;
 
 
 import com.udriving.drivingapi.util.JacksonUtil;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Data
 @Entity
-public class Activity extends BaseActivity implements ActivitiStatusConstant {
+public class UDActivity extends BaseActivity implements ActivitiStatusConstant {
     /**
      * 创建人用户id
      */

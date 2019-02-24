@@ -1,9 +1,7 @@
-package com.udriving.drivingapi.advice;
+package com.udriving.drivingapi.exception.advice;
 
 import com.udriving.drivingapi.util.JacksonUtil;
 import lombok.extern.log4j.Log4j2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;

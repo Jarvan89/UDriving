@@ -1,23 +1,35 @@
-package com.udriving.drivingapi.controller.request;
+package com.udriving.drivingapi.http.pojo.activity;
 
-import com.udriving.drivingapi.entity.activity.AddressInfo;
-import lombok.Getter;
-import lombok.Setter;
+import com.udriving.drivingapi.entity.dao.activiti.AddressInfo;
+import lombok.Data;
+import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
- * 新建活动接口请求参数
+ * Created by IntelliJ IDEA
+ * Coder : haiyang
+ * Date:2019/2/24
  */
-@Setter
-@Getter
-public class CreateActivityRequestParameter {
+@Data
+@ToString
+public class ReqActivity {
+    /**
+     * 活动id
+     */
+    protected Long id;
     /**
      * 活动名
      */
+    @NotBlank(message="活动名不能为空")
     private String title;
     /**
-     * 活动介绍图片
+     * 预估费用
+     */
+    protected long estimateCost;
+    /**
+     * 活动介绍图片地址
      */
     private List<String> introducePicture;
     /**
@@ -25,7 +37,7 @@ public class CreateActivityRequestParameter {
      */
     private long createUserId;
     /**
-     * 创建人昵称
+     * 创建人昵称活动名称可以和 userID 名称不一致
      */
     private String createNikeName;
     /**
@@ -45,13 +57,17 @@ public class CreateActivityRequestParameter {
      */
     private long backTimestamp;
     /**
-     * 预估费用
-     */
-    private float estimateCost;
-    /**
      * 活动介绍
      */
     private String introduce;
+    /**
+     * 成员列表
+     */
+    private List<String> memberIdList;
+    /**
+     * 参加活动的车辆id
+     */
+    private List<String> carNumber;
     /**
      * 注意事项
      */

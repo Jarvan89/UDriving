@@ -1,6 +1,6 @@
-package com.udriving.drivingapi.controller.request;
+package com.udriving.drivingapi.http.controller.request;
 
-import com.udriving.drivingapi.entity.activity.AddressInfo;
+import com.udriving.drivingapi.entity.dao.activiti.AddressInfo;
 import lombok.Data;
 
 import java.util.List;
@@ -10,18 +10,12 @@ import java.util.List;
  */
 @Data
 public class MoidfyActivityRequestParameter {
-    /**
-     * 活动id
-     */
-    protected Long id;
+
     /**
      * 活动名
      */
     protected String title;
-    /**
-     * 预估费用
-     */
-    protected float estimateCost;
+
     /**
      * 创建人用户名，该名仅针对本次活动有效
      */

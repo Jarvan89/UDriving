@@ -28,7 +28,7 @@ public class Swagger2 {
                 .apiInfo(apiInfo())
                 .select()
                 //为当前包路径
-                .apis(RequestHandlerSelectors.basePackage("com.udriving.drivingapi.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.udriving.drivingapi.http.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
