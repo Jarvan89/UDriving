@@ -1,7 +1,6 @@
 package com.udriving.drivingapi.http.pojo;
 
 import com.udriving.drivingapi.http.HttpCode;
-import com.udriving.drivingapi.http.controller.response.ResponseConstant;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -10,26 +9,25 @@ import lombok.RequiredArgsConstructor;
  */
 @Data
 @RequiredArgsConstructor
-public class BaseResponse implements ResponseConstant {
+public class BaseResponse {
     public BaseResponse(Object data) {
-        this.data = data;
-    }
-
-    public BaseResponse(HttpCode data) {
         this.data = data;
     }
 
     /**
      * 接口响应状态
      */
-    short code = SUCCEED;
+    private int code;
     /**
      * 接口响应状态描述
      */
-    String message;
+    private String message;
     /**
      * 接口响应附带数据
      */
+    private Object data;
 
-    Object data;
+    public BaseResponse(HttpCode httpCode) {
+        this.code = httpCode.ordinal();
+    }
 }
