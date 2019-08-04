@@ -31,7 +31,6 @@ public class ServiceBoot {
         if (args.length >= 1) {
             System.out.println("启动端口号：" + args[0]);
             new ServiceBoot(Integer.parseInt(args[0])).bootService();
-            System.out.println("启动完成");
         }
     }
 
