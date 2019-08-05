@@ -11,11 +11,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 服务器启动类
  */
 @AllArgsConstructor
+@Slf4j
 public class ServiceBoot {
     /**
      * 端口
