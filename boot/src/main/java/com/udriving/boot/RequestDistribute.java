@@ -1,8 +1,6 @@
 package com.udriving.boot;
 
-import com.alibaba.fastjson.JSON;
-import com.google.inject.Inject;
-import com.udriving.api.execute.base.BaseExecute;
+import com.udriving.api.execute.ExecuteMap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -11,7 +9,6 @@ import io.netty.handler.codec.http.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 /**
  * 请求分发实现
@@ -34,15 +31,9 @@ public class RequestDistribute extends ChannelInboundHandlerAdapter {
      * Http请求
      */
     private HttpRequest httpRequest;
-    /**
-     * 执行器Map，key为对外命名的functionId，Value为可处理functionId的BaseExecute的实现类
-     */
-    @Inject
-    private Map<String, BaseExecute> executeMap;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println("executeMap:" + JSON.toJSONString(executeMap));
         //获取请求方式标识
         if (msg instanceof HttpRequest) {
             httpRequest = (HttpRequest) msg;
@@ -74,13 +65,14 @@ public class RequestDistribute extends ChannelInboundHandlerAdapter {
                 // TODO: 2019/8/4 因post中body分多种，在未确定使用哪种种类之前，暂不写其中的解析
             }
         }
-
-        //todo 选择functionId处理类
-        if (!executeMap.containsKey(functionId)) {
-
-        }
-
+        //接口返回的数据
         String responseString = "";
+        //选择functionId处理类
+        if (ExecuteMap.apiMap.containsKey(functionId)) {
+            ExecuteMap.apiMap.get(functionId).execute();
+        } else {
+            // TODO: 2019/8/5 输出未找到 functionId的错误提示
+        }
         sendResponse(ctx, responseString, HttpResponseStatus.OK);
 
     }
